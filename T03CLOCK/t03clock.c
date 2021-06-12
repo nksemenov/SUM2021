@@ -97,8 +97,12 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   static HBITMAP hBmImage, hBmFrame;
   static BITMAP bm;
   static HBITMAP hBm;
-  static INT h, w, angles, anglem, angleh;
-  static DOUBLE pi = 3.14;
+  static INT h, w, q, l; 
+  static DOUBLE angle, pi = 3.14159265558979323846;
+  static CHAR *WD[] =
+  {
+    "бя", "ом", "бр", "яп", "вр", "ор", "яа"
+  };
 
   switch (Msg)
   {
@@ -144,15 +148,41 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     Rectangle(hMemDCFrame, 0, 0, w, h);
     BitBlt(hMemDCFrame, (w - bm.bmWidth)/ 2, (h - bm.bmHeight) / 2, w, h, hMemDCImage, 0, 0, SRCCOPY);
     
-    GetLocalTime(&st);
-    
-    angles = (st.wSecond + st.wMilliseconds / 1000.0) * pi / 60;
-    anglem = (st.wMinute + st.wSecond / 60.0) * pi / 60;
-    angleh = (st.wHour + st.wMinute / 60.0) * pi / 12;
+    if (hMemDCFrame != NULL)
+    {
+      HFONT hFnt, hFntOld;
+      GetLocalTime(&st);
+      
+      /*clock*/
+      SelectObject(hMemDCFrame, GetStockObject(DC_PEN));
+      SetDCPenColor(hMemDCFrame, RGB(0, 0, 255));
+      MoveToEx(hMemDCFrame, w / 2, h / 2, NULL);
+      angle = (st.wSecond + st.wMilliseconds / 1000.0) * 2 * pi / 60;
+      LineTo(hMemDCFrame, w / 2 + 200 * sin(angle), h / 2 - 200 * cos(angle));
 
-    SetDCPenColor(hMemDCFrame, RGB(0, 0, 255));
-    MoveToEx(hMemDCFrame, (w - bm.bmWidth)/ 2, (h - bm.bmHeight) / 2, NULL);
-    LineTo(hMemDCFrame, (w - bm.bmWidth)/ 2 + 50 * sin(angles), (h - bm.bmHeight) / 2 + 50 * cos(angles));
+      SetDCPenColor(hMemDCFrame, RGB(0, 255, 0));
+      MoveToEx(hMemDCFrame, w / 2, h / 2, NULL);
+      angle = (st.wMinute + st.wSecond / 60.0) * 2 * pi / 60;
+      LineTo(hMemDCFrame, w / 2 + 150 * sin(angle), h / 2 - 150 * cos(angle));
+
+      SetDCPenColor(hMemDCFrame, RGB(255, 0, 0));
+      MoveToEx(hMemDCFrame, w / 2, h / 2, NULL);
+      angle = (st.wHour + st.wMinute / 60.0) * 2 * pi / 12;
+      LineTo(hMemDCFrame, w / 2 + 100 * sin(angle), h / 2 - 100 * cos(angle));
+      
+      /*text*/
+      hFnt = CreateFont(30, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, RUSSIAN_CHARSET,
+                        OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, VARIABLE_PITCH | FF_SWISS, "Cooper");
+      
+      hFntOld = SelectObject(hMemDCFrame, hFnt);
+      SetTextColor(hMemDCFrame, RGB(150, 150, 150));
+      SetBkMode(hMemDCFrame, TRANSPARENT);
+      TextOut(hMemDCFrame, w / 2, (h + bm.bmHeight) / 2, WD[st.wDayOfWeek], 4);
+      SelectObject(hMemDCFrame, hFntOld);
+      DeleteObject(hFnt);
+
+      /*polygon*/
+    }
     InvalidateRect(hWnd, NULL, TRUE);
     return 0;
 
@@ -162,9 +192,21 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_DESTROY:
     if (hBmImage != NULL)
       DeleteObject(hBmImage);
+    DeleteObject(hMemDCFrame);
+    DeleteObject(hMemDCImage);
     KillTimer(hWnd, 47);
     PostQuitMessage(0);
     return 0;
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
+}
+VOID DrawHand(HDC hDCFrame, INT x, INT y, DOUBLE angle, INT q, INT l)
+{
+  /*POINT pnt[] =
+  {
+    {l * sin(angle), l * cos(angle)},
+    {},
+    {},
+    {}
+  };*/
 }
