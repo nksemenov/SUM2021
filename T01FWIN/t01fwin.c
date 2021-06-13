@@ -82,16 +82,20 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
     /*InvalidateRect(hWnd, NULL, TRUE/FALSE) */
-    hPen = CreatePen(PS_SOLID, 5, RGB(255, 0, 0));
+    hPen = CreatePen(PS_SOLID, 5, RGB(23, 77, 199));
     SelectObject(hDC, hPen);
 
-    MoveToEx(hDC, 30, 300, NULL);
-    LineTo(hDC, 230, 300);
-    LineTo(hDC, 330, 400);
-    MoveToEx(hDC, pt.x, pt.y, NULL);
-
-    Rectangle(hDC, 10, 10, 300, 200);
-    Ellipse(hDC, 310, 210, 800, 500);
+    MoveToEx(hDC, 300, 200, NULL);
+    LineTo(hDC, 300, 400);
+    LineTo(hDC, 250, 487);
+    MoveToEx(hDC, 300, 400, NULL);
+    LineTo(hDC, 350, 487);
+    MoveToEx(hDC, 300, 200, NULL);
+    LineTo(hDC, 250, 287);
+    MoveToEx(hDC, 300, 200, NULL);
+    LineTo(hDC, 350, 287);
+    
+    Ellipse(hDC, 260, 120, 340, 200);
 
     EndPaint(hWnd, &ps);
     return 0;

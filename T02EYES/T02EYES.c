@@ -59,14 +59,12 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
 {
   PAINTSTRUCT ps;
   HPEN hPen;
-  static HDC hDC;
+  HDC hDC;
   POINT pt;
   static HDC hMemDC;
   static HBITMAP hBm;
-  static INT h, w, x, y, r, r1;
+  static INT h, w, r, r1, i;
 
-  x = 300;
-  y = 300;
   r = 90;
   r1 = 20;
 
@@ -94,15 +92,18 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
 
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
-    BitBlt(hDC, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
-    
+    BitBlt(hDC, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);    
     EndPaint(hWnd, &ps);
     return 0;
   
   case WM_TIMER:
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
-    DrawEye(hMemDC, x, y, r, r1, pt.x, pt.y);
+    srand(30);
+    SetDCPenColor(hMemDC, NULL_PEN);
+    Rectangle(hMemDC, 0, 0, w, h);
+    for (i = 0; i < 30; i++)
+      DrawEye(hMemDC, rand() % w, rand() % h, r, r1, pt.x, pt.y);
     InvalidateRect(hWnd, NULL, TRUE);
     return 0;
 
@@ -112,7 +113,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_DESTROY:
     if (hBm != NULL)
       DeleteObject(hBm);
-    DeleteObject(hBm);
+    DeleteObject(hMemDC);
     KillTimer(hWnd, 47);
     PostQuitMessage(0);
     return 0;
@@ -122,20 +123,21 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
 
 VOID DrawEye( HDC hDC, INT x, INT y, INT r, INT r1, INT Mx, INT My )
 {
-  INT x1, y1, k, dx, dy, h, w;
-  DOUBLE l;
+  INT x1, y1, dx, dy, h, w;
+  DOUBLE l, k;
   dx = Mx - x;
   dy = My - y; 
-  l = sqrt((float)(dx * dx) + (float)(dy * dy));
+  l = sqrt((dx * dx) + (dy * dy));
   k = (r - r1) / l;
-  x1 = x + (Mx - x) * l;
-  y1 = y + (My - y) * l;
+  x1 = x + dx * k;
+  y1 = y + dy * k;
 
-  SetDCPenColor(hDC, RGB(0, 255, 0));
+  SelectObject(hDC, GetStockObject(DC_PEN));
+  SetDCPenColor(hDC, RGB(0, 0, 0));
   Ellipse(hDC, x - r, y - r, x + r, y + r);
   SetDCPenColor(hDC, RGB(0, 0, 255));
   if (l < (r - r1))
-    Ellipse(hDC, Mx - r1, My - r1, Mx + r1, My + r1);
+     Ellipse(hDC, Mx - r1, My - r1, Mx + r1, My + r1);
   else
     Ellipse(hDC, x1 - r1, y1 - r1, x1 + r1, y1 + r1);
 }
