@@ -1,11 +1,13 @@
-/**/
-#include <windows.h>
+/* FILENAME: T04PERM.c
+ * PROGRAMMER: NS6
+ * DATE: 12.06.2021
+ * PURPOSE: WinAPI Clock drawing application sample.
+ */
 #include <math.h>
+#include "GLOBE.h"
 
 #define WND_CLASS_NAME "cgsgforever"
 
-LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam );
-VOID DrawEye( HDC hDC, INT x, INT y, INT r, INT r1, INT Mx, INT My );
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine, INT ShowCmd )
 {
   WNDCLASS wc;
@@ -59,20 +61,16 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam )
 {
   PAINTSTRUCT ps;
-  HPEN hPen;
   HDC hDC;
   POINT pt;
   static HDC hMemDC;
   static HBITMAP hBm;
-  static INT h, w, r, r1, i;
-
-  r = 90;
-  r1 = 20;
+  static INT h, w, R = 100, i;
 
   switch (Msg)
   {
   case WM_CREATE:
-    SetTimer(hWnd, 47, 30, NULL);
+    SetTimer(hWnd, 47, 1, NULL);
     hDC = GetDC(hWnd);
     hMemDC = CreateCompatibleDC(hDC);
     ReleaseDC(hWnd, hDC);
@@ -82,6 +80,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_SIZE:
     h = HIWORD(lParam);
     w = LOWORD(lParam);
+    GlobeSet(R);
     if (hBm != NULL)
       DeleteObject(hBm);
     hDC = GetDC(hWnd);
@@ -100,11 +99,11 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_TIMER:
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
-    srand(30);
     SetDCPenColor(hMemDC, NULL_PEN);
     Rectangle(hMemDC, 0, 0, w, h);
-    for (i = 0; i < 30; i++)
-      DrawEye(hMemDC, rand() % w, rand() % h, r, r1, pt.x, pt.y);
+
+    GlobeDraw(hMemDC);
+
     InvalidateRect(hWnd, NULL, TRUE);
     return 0;
 
@@ -120,25 +119,4 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     return 0;
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
-}
-
-VOID DrawEye( HDC hDC, INT x, INT y, INT r, INT r1, INT Mx, INT My )
-{
-  INT x1, y1, dx, dy, h, w;
-  DOUBLE l, k;
-  dx = Mx - x;
-  dy = My - y; 
-  l = sqrt((dx * dx) + (dy * dy));
-  k = (r - r1) / l;
-  x1 = x + dx * k;
-  y1 = y + dy * k;
-
-  SelectObject(hDC, GetStockObject(DC_PEN));
-  SetDCPenColor(hDC, RGB(0, 0, 0));
-  Ellipse(hDC, x - r, y - r, x + r, y + r);
-  SetDCPenColor(hDC, RGB(0, 0, 255));
-  if (l < (r - r1))
-     Ellipse(hDC, Mx - r1, My - r1, Mx + r1, My + r1);
-  else
-    Ellipse(hDC, x1 - r1, y1 - r1, x1 + r1, y1 + r1);
 }

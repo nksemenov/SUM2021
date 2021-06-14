@@ -25,7 +25,7 @@ VOID Swap( INT *a, INT *b )
   *b = t;
 }   
 
-VOID Count( Void )
+VOID f( Void )
 {
   INT i;
   for (i = 0; i < n; i++)
@@ -38,7 +38,7 @@ VOID Go( INT Pos )
   INT i;
 
   if (Pos == n)
-    Count();
+    f();
   else
     for (i = Pos; i < n; i++)
     {
