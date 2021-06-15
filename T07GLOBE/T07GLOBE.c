@@ -1,9 +1,8 @@
-/* FILENAME: T04PERM.c
+/* FILENAME: T07GLOBE.c
  * PROGRAMMER: NS6
- * DATE: 12.06.2021
- * PURPOSE: WinAPI Clock drawing application sample.
+ * DATE: 14.06.2021
+ * PURPOSE: WinAPI Globe drawing application sample.
  */
-#include <math.h>
 #include "GLOBE.h"
 
 #define WND_CLASS_NAME "cgsgforever"
@@ -65,7 +64,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   POINT pt;
   static HDC hMemDC;
   static HBITMAP hBm;
-  static INT h, w, R = 100, i;
+  static INT h, w, R = 1, i;
 
   switch (Msg)
   {
@@ -97,12 +96,11 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     return 0;
   
   case WM_TIMER:
-    GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
     SetDCPenColor(hMemDC, NULL_PEN);
     Rectangle(hMemDC, 0, 0, w, h);
 
-    GlobeDraw(hMemDC);
+    GlobeDraw(hMemDC, w, h);
 
     InvalidateRect(hWnd, NULL, TRUE);
     return 0;
