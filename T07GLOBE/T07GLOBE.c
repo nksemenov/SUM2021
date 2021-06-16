@@ -4,6 +4,7 @@
  * PURPOSE: WinAPI Globe drawing application sample.
  */
 #include "GLOBE.h"
+#include "timer.h"
 
 #define WND_CLASS_NAME "cgsgforever"
 
@@ -59,12 +60,14 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
 
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam )
 {
+  //LARGEINTEGER t;
   PAINTSTRUCT ps;
   HDC hDC;
   POINT pt;
   static HDC hMemDC;
   static HBITMAP hBm;
   static INT h, w, R = 1, i;
+  static CHAR Buf[100];
 
   switch (Msg)
   {
@@ -74,6 +77,8 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     hMemDC = CreateCompatibleDC(hDC);
     ReleaseDC(hWnd, hDC);
     hBm = NULL;
+
+    GLB_TimerInit();
     return 0;
   
   case WM_SIZE:
@@ -96,15 +101,26 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     return 0;
   
   case WM_TIMER:
+    GLB_TimerResponse();
+    
     ScreenToClient(hWnd, &pt);
     SetDCPenColor(hMemDC, NULL_PEN);
     Rectangle(hMemDC, 0, 0, w, h);
 
     GlobeDraw(hMemDC, w, h);
 
+    SetBkMode(hMemDC, TRANSPARENT);
+    SetTextColor(hMemDC, RGB(80, 220, 100));
+    TextOut(hMemDC, 10, 10, Buf, sprintf(Buf, "FPS: %.3f", GLB_FPS));
+
     InvalidateRect(hWnd, NULL, TRUE);
     return 0;
 
+  case WM_KEYDOWN:
+    if (wParam == 'P')
+      IsPause = !IsPause;
+    return 0;
+  
   case WM_ERASEBKGND:
     return 1;
   

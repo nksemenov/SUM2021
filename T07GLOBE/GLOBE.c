@@ -5,6 +5,7 @@
  */
 #include "GLOBE.h"
 #include <time.h>
+#include "timer.h"
 
 #define GRID_H 25
 #define GRID_W 25
@@ -65,7 +66,7 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
 {
   INT i, j, s = 2, r, WinW, WinH;
   POINT pnts[GRID_H][GRID_W], p[4];
-  DOUBLE t = clock() / (DOUBLE)CLOCKS_PER_SEC, S;
+  DOUBLE t = GLB_Time, S;
 
   WinW = W;
   WinH = H;
@@ -127,6 +128,6 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
       }
 
       SelectObject(hDC, GetStockObject(DC_BRUSH));
-      SetDCBrushColor(hDC, RGB(150, 150, 150));
+      SetDCBrushColor(hDC, RGB(228, 68, 150));
     }
 }

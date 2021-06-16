@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <math.h>
 
+#include "timer.h"
+
 typedef struct tagVEC
 {
   DOUBLE x, y, z;
