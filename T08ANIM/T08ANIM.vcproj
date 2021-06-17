@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="T08MTH"
-	ProjectGUID="{3DD5A1D3-8822-4299-AF23-09A7D2C960E6}"
-	RootNamespace="T08MTH"
+	Name="T08ANIM"
+	ProjectGUID="{C048C83C-65AF-4F5C-B6FF-8F250FFAFACF}"
+	RootNamespace="T08ANIM"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="X:\TGRKIT\INCLUDE;$(OPENAL_DIR)Include;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;_CONSOLE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -66,7 +66,7 @@
 				AdditionalLibraryDirectories="X:\TGRKIT\LIB;$(OPENAL_DIR)Lib;"
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -120,7 +120,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="X:\TGRKIT\INCLUDE;$(OPENAL_DIR)Include;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;_WINDOWS"
 				RuntimeLibrary="1"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -142,7 +142,7 @@
 				AdditionalLibraryDirectories="X:\TGRKIT\LIB;$(OPENAL_DIR)Lib;"
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -179,13 +179,29 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\MTH.H"
+				RelativePath=".\src\def.h"
 				>
 			</File>
-			<File
-				RelativePath=".\t08mth.c"
+			<Filter
+				Name="Math Support"
 				>
-			</File>
+				<File
+					RelativePath=".\src\mth\mth.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Animation System"
+				>
+			</Filter>
+			<Filter
+				Name="Windows Depended"
+				>
+				<File
+					RelativePath=".\src\win\main.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

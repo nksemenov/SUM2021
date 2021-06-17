@@ -4,6 +4,9 @@
  * PURPOSE: 3D math implementation module.
  */
 
+#ifndef __mth_h_
+#define __mth_h_
+
 #include <math.h>
 #include <windows.h>
 
@@ -66,13 +69,6 @@ __inline VEC VecSet( DBL X, DBL Y, DBL Z )
   return v;
 } /* End of 'VecSet' function */
 
-/* Add two vectors function.
- * ARGUMENTS:
- *   - vectors to be add:
- *       VEC V1, V2;
- * RETURNS:
- *   (VEC) result vector.
- */
 __inline VEC VecAddVec( VEC V1, VEC V2 )
 {
   return VecSet(V1.X + V2.X, V1.Y + V2.Y, V1.Z + V2.Z);
@@ -111,16 +107,12 @@ __inline VEC VecCrossVec( VEC V1, VEC V2 )
 
 __inline DBL VecLen2( VEC V )
 {
-  return V.X * V.X, V.Y * V.Y, V.Z * V.Z;
+  return V.X * V.X + V.Y * V.Y + V.Z * V.Z;
 }
 
 __inline DBL VecLen( VEC V )
 {
-  DBL len = VecDotVec(V, V);
-
-  if (len == 1 || len == 0)
-    return len;
-  return sqrt(len);
+  return sqrt(V.X * V.X + V.Y * V.Y + V.Z * V.Z);
 }
 
 __inline VEC VecNormalize( VEC V )
@@ -134,8 +126,6 @@ __inline VEC VecNormalize( VEC V )
 
 __inline VEC PointTransform( VEC V, MATR M )  /*V * M4x3*/
 {
-  DBL w = V.X * M.A[0][3] + V.Y * M.A[1][3] + V.Z * M.A[2][3] + M.A[3][3];
-
   return VecSet(V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0] + M.A[3][0],
                 V.X * M.A[0][1] + V.Y * M.A[1][1] + V.Z * M.A[2][1] + M.A[3][1],
                 V.X * M.A[0][2] + V.Y * M.A[1][2] + V.Z * M.A[2][2] + M.A[3][2]);
@@ -146,7 +136,7 @@ __inline VEC VectorTransform( VEC V, MATR M ) /*V * M3x3*/
                 V.X * M.A[0][1] + V.Y * M.A[1][1] + V.Z * M.A[2][1],
                 V.X * M.A[0][2] + V.Y * M.A[1][2] + V.Z * M.A[2][2]);
 }
-__inline VEC VecMulMatr( VEC V, MATR M )     /*  V * M4x4 / w */ /*!!!*/
+__inline VEC VecMulMatr( VEC V, MATR M )     /*  V * M4x4 / w */
 {
   DBL w = V.X * M.A[0][3] + V.Y * M.A[1][3] + V.Z * M.A[2][3] + M.A[3][3];
 
@@ -249,7 +239,7 @@ __inline MATR MatrRotate( DBL AngleInDegree, VEC V )
     {
       {c + A.X * A.X * (1 - c), A.X * A.Y * (1 - c) + A.Z * s, A.X * A.Z * (1 - c) - A.Y * s,0},
       {A.X * A.Y * (1 - c) - A.Z * s, c + A.Y * A.Y * (1 - c), A.Y * A.Z * (1 - c) + A.X * c, 0},
-      {A.X * A.Z * (1 - c) + A.Y * s, A.Z * A.Y * (1 - c) + A.X * s, c+ A.Z * A.Z * (1 - c), 0},
+      {A.X * A.Z * (1 - c) + A.Y * s, A.Z * A.Y * (1 - c) + A.X * s, c + A.Z * A.Z * (1 - c), 0},
       {0, 0, 0, 1}
     }  
   };
@@ -271,6 +261,17 @@ __inline MATR MatrMulMatr( MATR M1, MATR M2 )
 
 __inline MATR MatrTranspose( MATR M )
 {
+  DBL t; 
+  INT i, j;
+
+  for (i = 0; i < 4; i++)
+    for (j = 0; j < 4; j++)
+    {
+      t = M.A[i][j];
+      M.A[i][j] = M.A[j][i];
+      M.A[j][i] = t;
+    }
+    return M;
 }
 __inline DBL MatrDeterm3x3( DBL A11, DBL A12, DBL A13,
                             DBL A21, DBL A22, DBL A23,
@@ -378,3 +379,7 @@ for (...
     pnts[i][j].y = WinH / 2 - (INT)v.Y;
   }
 */
+
+#endif /* __mth_h_ */
+
+/* END OF 'mth.h' FILE */

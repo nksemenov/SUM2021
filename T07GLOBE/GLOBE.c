@@ -3,9 +3,10 @@
  * DATE: 12.06.2021
  * PURPOSE: WinAPI Clock drawing application sample.
  */
-#include "GLOBE.h"
 #include <time.h>
+#include "GLOBE.h"
 #include "timer.h"
+#include "mth.h"
 
 #define GRID_H 25
 #define GRID_W 25
@@ -20,9 +21,9 @@ VEC RotateZ( VEC V, DOUBLE angle )
   DOUBLE a = angle * pi / 180;
   VEC r;
   
-  r.x = V.x * cos(a) + V.y * sin(a);
-  r.y = V.y * cos(a) - V.x * sin(a);
-  r.z = V.z;
+  r.X = V.X * cos(a) + V.Y * sin(a);
+  r.Y = V.Y * cos(a) - V.X * sin(a);
+  r.Z = V.Z;
   return r;
 }
 
@@ -31,9 +32,9 @@ VEC RotateY( VEC V, DOUBLE angle )
   DOUBLE a = angle * pi / 180;
   VEC r;
   
-  r.y = V.y * cos(a) + V.z * sin(a);
-  r.z = V.z * cos(a) - V.y * sin(a);
-  r.x = V.x;
+  r.Y = V.Y * cos(a) + V.Z * sin(a);
+  r.Z = V.Z * cos(a) - V.Y * sin(a);
+  r.X = V.X;
   return r;
 } 
 
@@ -42,9 +43,9 @@ VEC RotateX( VEC V, DOUBLE angle )
   DOUBLE a = angle * pi / 180;
   VEC r;
   
-  r.z = V.z * cos(a) + V.x * sin(a);
-  r.x = V.x * cos(a) - V.z * sin(a);
-  r.y = V.y;
+  r.Z = V.Z * cos(a) + V.X * sin(a);
+  r.X = V.X * cos(a) - V.Z * sin(a);
+  r.Y = V.Y;
   return r;
 } 
 
@@ -56,9 +57,9 @@ VOID GlobeSet( DOUBLE R )
   for (i = 0, theta = 0; i < GRID_H; i++, theta += pi / (GRID_H - 1))
     for (j = 0, phi = 0; j < GRID_W; j++, phi += 2 * pi / (GRID_W - 1))
     {
-      Geom[i][j].x = R * sin(theta)* sin(phi);
-      Geom[i][j].y = R * cos(theta);
-      Geom[i][j].z = R * sin(theta) * cos(phi);
+      Geom[i][j].X = R * sin(theta)* sin(phi);
+      Geom[i][j].Y = R * cos(theta);
+      Geom[i][j].Z = R * sin(theta) * cos(phi);
     }
 }
 
@@ -67,11 +68,12 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
   INT i, j, s = 2, r, WinW, WinH;
   POINT pnts[GRID_H][GRID_W], p[4];
   DOUBLE t = GLB_Time, S;
+  MATR m = MatrMulMatr(MatrRotateY(GLB_Time * 30), MatrRotate(sin(GLB_Time) * 8, VecSet(1, 1, 1)));
 
   WinW = W;
   WinH = H;
   
-  r = WinW < WinH ? WinW : WinH;                              
+  r = WinW < WinH ? WinW : WinH;
 
   GetLocalTime(&st);
 
@@ -79,29 +81,18 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
     for (j = 0; j < GRID_W; j++)
     {
       VEC p = Geom[i][j];
+      VEC v = PointTransform(Geom[i][j], m);
 
       p = RotateZ(p, t * 50);
       p = RotateY(p, t * 50);
       p = RotateX(p, t * 50);
 
-      pnts[i][j].x = WinW / 2 + p.x * r * 0.3;
-      pnts[i][j].y = WinH / 2 - p.y * r * 0.3 + 150 - 200 * fabs(sin(t * 5) );
+      //pnts[i][j].x = WinW / 2 + p.X * r * 0.3;
+      //pnts[i][j].y = WinH / 2 - p.Y * r * 0.3 + 150 - 200 * fabs(sin(t * 5) );
+      pnts[i][j].x = WinW / 2 + v.X * r * 0.5;
+      pnts[i][j].y = WinH / 2 - v.Y * r * 0.5;
     }
   
-  /*for (i = 0; i < GRID_H; i++)
-  {
-    MoveToEx(hDC, pnts[i][0].x, pnts[i][0].y, NULL);
-    for (j = 0; j < GRID_W; j++)
-      LineTo(hDC, pnts[i][j].x, pnts[i][j].y);
-  }
-  
-  for (i = 0; i < GRID_H - 1; i++)
-    for (j = 0; j < GRID_W; j++)
-    {
-      MoveToEx(hDC, pnts[i][j].x, pnts[i][j].y, NULL);
-      LineTo(hDC, pnts[i + 1][j].x, pnts[i + 1][j].y);
-    }
-   */
   srand(30);
   SelectObject(hDC, GetStockObject(DC_PEN));
   SetDCPenColor(hDC, RGB(255, 255, 255));

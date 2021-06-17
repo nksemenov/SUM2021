@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mth.h"
+				>
+			</File>
+			<File
 				RelativePath=".\T07GLOBE.c"
 				>
 			</File>
@@ -196,10 +200,6 @@
 			</File>
 			<File
 				RelativePath=".\timer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\timer1.c"
 				>
 			</File>
 		</Filter>

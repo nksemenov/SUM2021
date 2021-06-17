@@ -3,8 +3,10 @@
  * DATE: 14.06.2021
  * PURPOSE: WinAPI Globe drawing application sample.
  */
-#include "GLOBE.h"
-#include "timer.h"
+
+#include <stdio.h>
+
+#include "globe.h"
 
 #define WND_CLASS_NAME "cgsgforever"
 
@@ -133,4 +135,6 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     return 0;
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
-}
+} /* End of 'MyWindowFunc' function */
+
+/* END OF 'T07GLOBE.c' FILE */
