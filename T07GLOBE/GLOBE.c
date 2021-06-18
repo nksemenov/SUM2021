@@ -85,7 +85,7 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
   
  /* m = MatrMulMatr(MatrMulMatr(MatrRotateZ(t * 30), MatrRotateY(t * 15)), MatrTranslate(VecSet(0, fabs(1.5 * sin(t * 3)) - 0.47, 0)));  */
   m = MatrIdentity();
-  m = MatrView(VecSet(0, sin(GLB_Time), 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
+  m = MatrView(VecSet(0, -1, -5), VecSet(0, 0, 0), VecSet(0, 1, 0));
   GetLocalTime(&st);
 
   for (i = 0; i < GRID_H; i++)
