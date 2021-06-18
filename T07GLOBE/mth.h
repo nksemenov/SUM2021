@@ -96,7 +96,7 @@ __inline VEC VecNeg( VEC V )
 
 __inline DBL VecDotVec( VEC V1, VEC V2 )
 {
-  return (V1.X * V2.X + V1.Y * V2.Y + V1.Y * V2.Y) / (sqrt(V1.X * V1.X + V1.Y * V1.Y + V1.Z * V1.Z) + sqrt(V2.X * V2.X + V2.Y * V2.Y + V2.Z * V2.Z)); 
+  return (V1.X * V2.X + V1.Y * V2.Y + V1.Y * V2.Y) / (sqrt(V1.X * V1.X + V1.Y * V1.Y + V1.Z * V1.Z) + sqrt(V2.X * V2.X + V2.Y * V2.Y + V2.Z * V2.Z));
 }
 
 __inline VEC VecCrossVec( VEC V1, VEC V2 )
@@ -321,20 +321,21 @@ __inline MATR MatrInverse( MATR M )
 __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
 {
   VEC
-	Dir = VecNormalize(VecSubVec(At, Loc)),
-	Right = VecNormalize(VecCrossVec(Dir, Up1)),
-	Up = VecNormalize(VecCrossVec(Right, Dir));
+    Dir = VecNormalize(VecSubVec(At, Loc)),
+    Right = VecNormalize(VecCrossVec(Dir, Up1)),
+    Up = VecNormalize(VecCrossVec(Right, Dir));
   MATR m =
   {
-	{
-		{Right.X, Up.X, -Dir.X, 0},
-		{Right.Y, Up.Y, -Dir.Y, 0},
-		{Right.Z, Up.Z, -Dir.Z, 0},
-		{-Loc.X * Right.X, -Loc.Y * Up.Y, -Loc.Z * Dir.Z, 1}
-	}
+    {
+      {Right.X, Up.X, -Dir.X, 0},
+      {Right.Y, Up.Y, -Dir.Y, 0},
+      {Right.Z, Up.Z, -Dir.Z, 0},
+      {-VecDotVec(Loc, Right), -VecDotVec(Loc, Up), VecDotVec(Loc, Dir), 1}
+    }
   };
-	return m;
-}
+
+  return m;
+} /* End of 'MatrView' function */
 
 
 /* проверка (вариант) */

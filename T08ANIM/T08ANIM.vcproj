@@ -197,15 +197,19 @@
 					Name="Rendering Subsystem"
 					>
 					<File
-						RelativePath=".\rnd.h"
+						RelativePath=".\src\anim\rnd\rnd.h"
 						>
 					</File>
 					<File
-						RelativePath=".\rndbase.c"
+						RelativePath=".\src\anim\rnd\rndbase.c"
 						>
 					</File>
 					<File
-						RelativePath=".\rnddata.c"
+						RelativePath=".\src\anim\rnd\rnddata.c"
+						>
+					</File>
+					<File
+						RelativePath=".\src\anim\rnd\rndprim.c"
 						>
 					</File>
 				</Filter>
