@@ -68,7 +68,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   POINT pt;
   static HDC hMemDC;
   static HBITMAP hBm;
-  static INT h, w, R = 1, i;
+  static INT h, w, i;
   static CHAR Buf[100];
 
   switch (Msg)
@@ -86,7 +86,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_SIZE:
     h = HIWORD(lParam);
     w = LOWORD(lParam);
-    GlobeSet(R);
+    GlobeSet(1.0);
     if (hBm != NULL)
       DeleteObject(hBm);
     hDC = GetDC(hWnd);

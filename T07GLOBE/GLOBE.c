@@ -65,11 +65,11 @@ VOID GlobeSet( DOUBLE R )
 
 VOID GlobeDraw( HDC hDC, INT W, INT H )
 {
-  INT i, j, s = 2, r, WinW, WinH;
+  INT i, j, WinW, WinH;
   POINT pnts[GRID_H][GRID_W], p[4];
   DOUBLE t = GLB_Time, S;
-  MATR m /*= MatrMulMatr(MatrMulMatr(MatrRotateX(GLB_Time * 50), MatrRotateY(GLB_Time * 50)), MatrRotate(sin(GLB_Time ) * 8, VecSet(1, 1, 1)))*/;
-  DOUBLE Size = 2, Wp, Hp, ProjDist;
+  MATR m;
+  DOUBLE Size = 3, Wp, Hp, ProjDist;
 
   WinW = W;
   WinH = H;
@@ -81,27 +81,22 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
     Hp *= (DBL) WinH / WinW;
   ProjDist = Size;
 
-  r = WinW < WinH ? WinW : WinH;
-  
- /* m = MatrMulMatr(MatrMulMatr(MatrRotateZ(t * 30), MatrRotateY(t * 15)), MatrTranslate(VecSet(0, fabs(1.5 * sin(t * 3)) - 0.47, 0)));  */
-  m = MatrIdentity();
-  m = MatrView(VecSet(0, sin(GLB_Time), 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
+  //m = MatrMulMatr(MatrMulMatr(MatrRotateZ(t * 30), MatrRotateY(t * 15)), MatrTranslate(VecSet(0, fabs(1.5 * sin(t * 3)) - 0.47, 0)));
+  //m = MatrIdentity();
+  m = MatrView(VecSet(0, 0, 1), VecSet(0, 0, 0), VecSet(0, 1, 0));
   GetLocalTime(&st);
 
   for (i = 0; i < GRID_H; i++)
     for (j = 0; j < GRID_W; j++)
     {
-      VEC p = Geom[i][j];
-      VEC v = PointTransform(Geom[i][j], m);
+      VEC v = Geom[i][j];
+      v = PointTransform(v, m);
 
-      p = RotateZ(p, t * 50);
-      p = RotateY(p, t * 50);
-      p = RotateX(p, t * 50);
-
-      //pnts[i][j].x = WinW / 2 + p.X * r * 0.3;
-      //pnts[i][j].y = WinH / 2 - p.Y * r * 0.3 + 150 - 200 * fabs(sin(t * 5) );
-      pnts[i][j].x = WinW / 2 + v.X * r * 0.1;
-      pnts[i][j].y = WinH / 2 - v.Y * r * 0.1;
+      //v.X = v.X * ProjDist / -v.Z;
+      //v.Y = v.Y * ProjDist / -v.Z;
+      
+      pnts[i][j].x = v.X * WinW / Wp + WinW / 2;
+      pnts[i][j].y = -v.Y * WinH / Hp + WinH / 2;
     }
   
   srand(30);
@@ -119,10 +114,10 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
       p[2] = pnts[i + 1][j + 1];
       p[3] = pnts[i + 1][j];
       
-      S = (p[0].x - p[1].x) * (p[0].y + p[1].y) / 2 +
-          (p[1].x - p[2].x) * (p[1].y + p[2].y) / 2 +
-          (p[2].x - p[3].x) * (p[2].y + p[3].y) / 2 +
-          (p[3].x - p[0].x) * (p[3].y + p[0].y) / 2;
+      S = (p[0].x - p[1].x) * -(p[0].y + p[1].y) / 2 +
+          (p[1].x - p[2].x) * -(p[1].y + p[2].y) / 2 +
+          (p[2].x - p[3].x) * -(p[2].y + p[3].y) / 2 +
+          (p[3].x - p[0].x) * -(p[3].y + p[0].y) / 2;
 
       if (S > 0)
       {
