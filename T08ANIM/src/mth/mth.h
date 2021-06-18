@@ -319,6 +319,23 @@ __inline MATR MatrInverse( MATR M )
   return r;
 }
 
+__inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
+{
+  VEC
+	Dir = VecNormalize(VecSubVec(At, Loc)),
+	Right = VecNormalize(VecCrossVec(Dir, Up1)),
+	Up = VecNormalize(VecCrossVec(Right, Dir));
+  MATR m =
+  {
+	{
+		{Right.X, Up.X, -Dir.X, 0},
+		{Right.Y, Up.Y, -Dir.Y, 0},
+		{Right.Z, Up.Z, -Dir.Z, 0},
+		{-Loc.X * Right.X, -Loc.Y * Up.Y, -Loc.Z * Dir.Z, 1}
+	}
+  };
+	return m;
+}
 
 /* проверка (вариант) */
 /*void main( void )
@@ -338,47 +355,7 @@ __inline MATR MatrInverse( MATR M )
   m = MatrRotate(90, VecSet(0, 1, 0));
   m1 = MatrInverse(m);
   . . .
-}
-
-__inline MATR MatrSet( DBL A00, DBL A01, ... )
-{
-  MATR r =
-  {
-    {
-      {A00, A01, ...}
-    }
-  };
-
-  return r;
-}
-
-__inline MATR MatrScale( VEC S )
-{
-  return MatrSet(S.X, 0, 0, 0,
-                 0, S.Y, 0, 0,
-                 0, 0, S.Y, 0,
-                 0, 0, 0, 1);
-}                            */
-
-
-/*!!! ВО ВСЕ ЗАГОЛОВОЧНЫЕ ФАЙЛЫ ДОБАВЛЯЕМ ИСКЛЮЧЕНИЕ ПОВТОРНОГО ВКЛЮЧЕНИЯ: (см. п.7 основного конспекта по Си)
-
-
-
-пример в GLOBE
-
-MATR m = MatrMulMatr(MatrRotateY(GLB_Time * 30), MatrRotate(sin(GLB_Time) * 8, VecSet(1, 1, 1)));
-
-for (...
-  for (...
-  {
-    VEC v = PointTransform(Geom[i][i], m);
-
-
-    pnts[i][j].x = WinW / 2 + (INT)v.X;
-    pnts[i][j].y = WinH / 2 - (INT)v.Y;
-  }
-*/
+}*/
 
 #endif /* __mth_h_ */
 

@@ -68,13 +68,24 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
   INT i, j, s = 2, r, WinW, WinH;
   POINT pnts[GRID_H][GRID_W], p[4];
   DOUBLE t = GLB_Time, S;
-  MATR m = MatrMulMatr(MatrRotateY(GLB_Time * 30), MatrRotate(sin(GLB_Time) * 8, VecSet(1, 1, 1)));
+  MATR m /*= MatrMulMatr(MatrMulMatr(MatrRotateX(GLB_Time * 50), MatrRotateY(GLB_Time * 50)), MatrRotate(sin(GLB_Time ) * 8, VecSet(1, 1, 1)))*/;
+  DOUBLE Size = 2, Wp, Hp, ProjDist;
 
   WinW = W;
   WinH = H;
   
-  r = WinW < WinH ? WinW : WinH;
+  Wp = Hp = Size;
+  if (WinW > WinH)
+    Wp *= (DBL) WinW / WinH;
+  else
+    Hp *= (DBL) WinH / WinW;
+  ProjDist = Size;
 
+  r = WinW < WinH ? WinW : WinH;
+  
+ /* m = MatrMulMatr(MatrMulMatr(MatrRotateZ(t * 30), MatrRotateY(t * 15)), MatrTranslate(VecSet(0, fabs(1.5 * sin(t * 3)) - 0.47, 0)));  */
+  m = MatrIdentity();
+  m = MatrView(VecSet(0, sin(GLB_Time), 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
   GetLocalTime(&st);
 
   for (i = 0; i < GRID_H; i++)
@@ -89,8 +100,8 @@ VOID GlobeDraw( HDC hDC, INT W, INT H )
 
       //pnts[i][j].x = WinW / 2 + p.X * r * 0.3;
       //pnts[i][j].y = WinH / 2 - p.Y * r * 0.3 + 150 - 200 * fabs(sin(t * 5) );
-      pnts[i][j].x = WinW / 2 + v.X * r * 0.5;
-      pnts[i][j].y = WinH / 2 - v.Y * r * 0.5;
+      pnts[i][j].x = WinW / 2 + v.X * r * 0.1;
+      pnts[i][j].y = WinH / 2 - v.Y * r * 0.1;
     }
   
   srand(30);
