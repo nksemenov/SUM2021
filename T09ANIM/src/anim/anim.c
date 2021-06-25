@@ -1,50 +1,72 @@
-#include <string.h>
+/* FILE NAME: anim.c
+* PROGRAMMER: NS6
+* DATE: 19.06.2021
+* PURPOSE: 3D animation primitive handle module.
+*/
 
 #include "anim.h"
 
+/* Global animation data */
+ns6ANIM NS6_Anim;
 
-
+/* NS6_AnimInit */
 VOID NS6_AnimInit( HWND hWnd )
 {
-  memset(&NS6_Anim, 0, sizeof(NS6_ANIM));
 
+  memset(&NS6_Anim, 0, sizeof(ns6ANIM));
+
+  /* Fill animation context */
   NS6_Anim.hWnd = hWnd;
   NS6_RndInit(hWnd);
   NS6_Anim.hDC = NS6_hRndDCFrame;
   NS6_Anim.W = NS6_RndFrameW;
-  NS6_Anim.H = NS6_RndFrameH; 
+  NS6_Anim.H = NS6_RndFrameH;
+
+  /* Timer initialization */
+  NS6_TimerInit();
 }
+/* End of 'NS6_AnimInit' function */
 
-VOID NS6_AminClose( VOID )
+/* NS6_AnimClose */
+VOID NS6_AnimClose( VOID )
 {
-  INt i;
+  INT i;
 
-  for (i = 0; i < NS6_Anim.NubOdUnits; i++)
+  for (i = 0; i < NS6_Anim.NumOfUnits; i++)
   {
     NS6_Anim.Units[i]->Close(NS6_Anim.Units[i], &NS6_Anim);
     free(NS6_Anim.Units[i]);
+    NS6_Anim.Units[i] = NULL;
   }
+  NS6_Anim.NumOfUnits = 0;
   NS6_RndClose();
-  memset(&NS6_Anim, 0, sizeof(NS6_ANIM));
 }
+/* End of 'NS6_AnimClose' function */
 
+/* NS6_AnimResize */
 VOID NS6_AnimResize( INT W, INT H )
 {
-  NS6_RndResize(W, H);
   NS6_Anim.W = W;
   NS6_Anim.H = H;
-
-  NS6_AnimRender();
+  NS6_RndResize(W, H);
 }
+/* NS6_AnimResize */
 
-Void NS6_AnimCopyFrame( HDC hDC )
+/* NS6_AnimCopyFrame */
+VOID NS6_AnimCopyFrame( HDC hDC )
 {
   NS6_RndCopyFrame(hDC);
 }
+/* End of 'NS6_AnimCopyFrame' function */
 
+/* NS6_AnimRender */
 VOID NS6_AnimRender( VOID )
 {
   INT i;
+  POINT pt;
+
+  /* Timer response */
+  NS6_TimerResponse();
 
   for (i = 0; i < NS6_Anim.NumOfUnits; i++)
     NS6_Anim.Units[i]->Response(NS6_Anim.Units[i], &NS6_Anim);
@@ -53,14 +75,38 @@ VOID NS6_AnimRender( VOID )
   for (i = 0; i < NS6_Anim.NumOfUnits; i++)
     NS6_Anim.Units[i]->Render(NS6_Anim.Units[i], &NS6_Anim);
   NS6_RndEnd();
-}
 
-VOID NS6_AnimUnitAdd( NS6_UNIT *Uni )
+  /* Keyboard */
+  GetKeyboardState(NS6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+  {
+    NS6_Anim.Keys[i] >>= 7;
+    NS6_Anim.KeysClick[i] = NS6_Anim.Keys[i] && NS6_Anim.KeysOld[i];
+  }
+  memcpy(NS6_Anim.KeysOld, NS6_Anim.Keys, 256);
+
+  /* Mouse */
+  GetCursorPos(&pt);
+  ScreenToClient(NS6_Anim.hWnd, &pt);
+
+  NS6_Anim.Mx = pt.x;
+  NS6_Anim.My = pt.y;  
+  NS6_Anim.Mdx = pt.x - NS6_Anim.Mx;
+  NS6_Anim.Mdy = pt.y - NS6_Anim.My;
+}
+/* End of 'NS6_AnimRender' function */
+
+
+/* NS6_AnimUnitAdd */
+VOID NS6_AnimAddUnit( ns6UNIT *Uni )
 {
   if (NS6_Anim.NumOfUnits < NS6_MAX_UNITS)
-    NS6_Anim.Units[NS6_Amin.NumOfUnits++] = Uni, Uni->Init(Uni, &NS6_Anim);
+    NS6_Anim.Units[NS6_Anim.NumOfUnits++] = Uni, Uni->Init(Uni, &NS6_Anim);
 }
+/* End of 'NS6_AnimUnitAdd' function */
 
+
+/* NS6_FlipFullScreen */
 VOID NS6_AnimFlipFullScreen( VOID )
 {
   static BOOL IsFullScreen = FALSE;
@@ -71,36 +117,35 @@ VOID NS6_AnimFlipFullScreen( VOID )
     RECT rc;
     HMONITOR hmon;
     MONITORINFOEX moninfo;
+    
+    /* Saving old window size */
+    GetWindowRect(NS6_hRndWnd, &SaveRC);
 
-    GetWindowRect(NS6_Anim.hWnd, &SaveRC);
-    hmon = MonitorFromWindow(NS6_Anim.hWnd, MONITOR_DEFAULTTONEAREST);
-    moninfo.cbsize = sizeof(moninfo);
+    hmon = MonitorFromWindow(NS6_hRndWnd, MONITOR_DEFAULTTONEAREST);
+    
+    /* Getting monitor info */
+    moninfo.cbSize = sizeof(moninfo);
     GetMonitorInfo(hmon, (MONITORINFO *)&moninfo);
+
     rc = moninfo.rcMonitor;
 
-    AdjustWindowRect(&rc, GetWindowLong(NS6_Anim.hWnd, GWL_STYLE), FALSE);
+    AdjustWindowRect(&rc, GetWindowLong(NS6_hRndWnd, GWL_STYLE), FALSE);
 
-    SetWindowPos(NS6_Anim.hWnd, HWND_TOP, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top + 201, SWP_NOOWNERZORDER);
+    SetWindowPos(NS6_hRndWnd, HWND_TOP,
+                 rc.left, rc.top,
+                 rc.right - rc.left, rc.bottom - rc.top + 201,
+                 SWP_NOOWNERZORDER);
     IsFullScreen = TRUE;
   }
   else
   {
-    SetWindowPos(NS6_Anim.hWnd, HWND_TOP, SaveRC.left, SaveRC.top, SaveRC.right - SaveRC.left, SaveRC.bottom - SaveRC.top + 201, SWP_NOOWNERZORDER);
+    SetWindowPos(NS6_hRndWnd, HWND_TOP,
+    SaveRC.left, SaveRC.top,
+    SaveRC.right - SaveRC.left, SaveRC.bottom - SaveRC.top,
+    SWP_NOOWNERZORDER);
     IsFullScreen = FALSE;
   }
 }
+/* End of 'NS6_AnimFlipFullScreen' function */
 
-VOID NS6_AnimDoExit( VOID )
-{
-  static BOOL IsFinalizeStart = FALSE;
-
-  if (IsFinalizeStart)
-    return;
-  IsFinalizeStart = TRUE;
-  if (MessageBox(NS6_Anim.hWnd, "Are you sure?", "Exit", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2) != IDOK)
-  {
-    IsFinalizeStart = FALSE;
-    return;
-  }
-  SendMessage(NS6_Anim.hWnd, WM_CLOSE, 0, 0);
-}
+/* END OF 'anim.c' FILE */

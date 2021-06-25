@@ -238,7 +238,7 @@
 				Name="Units"
 				>
 				<File
-					RelativePath=".\src\unit\u_ball.c"
+					RelativePath=".\src\unit\u_deer.c"
 					>
 				</File>
 				<File

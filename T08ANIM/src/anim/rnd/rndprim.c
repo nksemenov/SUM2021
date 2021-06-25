@@ -2,12 +2,12 @@
 #include <string.h>
 #include "rnd.h"
 
-BOOL NS6_RndPrimCreate( NS6_PRIM *Pr, INT NoofV, INT NoofI)
+BOOL NS6_RndPrimCreate( ns6PRIM *Pr, INT NoofV, INT NoofI)
 {
   INT size;
 
-  memset(Pr, 0, sizeof(NS6_PRIM));
-  size = sizeof(NS6_VERTEX) * NoofV + sizeof(INT) * NoofI;
+  memset(Pr, 0, sizeof(ns6PRIM));
+  size = sizeof(ns6VERTEX) * NoofV + sizeof(INT) * NoofI;
 
   if ((Pr->V = malloc(size)) == NULL)
     return FALSE;
@@ -20,14 +20,14 @@ BOOL NS6_RndPrimCreate( NS6_PRIM *Pr, INT NoofV, INT NoofI)
   return TRUE;
 }
 
-VOID NS6_RndPrimFree( NS6_PRIM *Pr)
+VOID NS6_RndPrimFree( ns6PRIM *Pr)
 {
   if (Pr->V != NULL)
     free(Pr->V);
-  memset(Pr, 0, sizeof(NS6_PRIM));
+  memset(Pr, 0, sizeof(ns6PRIM));
 }
 
-VOID NS6_RndPrimDraw( NS6_PRIM *Pr, MATR World )
+VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 {
   INT i;
   MATR wvp = MatrMulMatr(MatrMulMatr(Pr->Trans, World), NS6_RndMatrVP);
@@ -54,7 +54,7 @@ VOID NS6_RndPrimDraw( NS6_PRIM *Pr, MATR World )
   free(pnts);
 }
 
-VOID NS6_RndPrimCreateSphere( NS6_PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
+VOID NS6_RndPrimCreateSphere( ns6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
 {
   INT i, j, k; 
   DOUBLE phi, theta, pi = 3.14159265558979323846;
@@ -77,7 +77,7 @@ VOID NS6_RndPrimCreateSphere( NS6_PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH
     }
 }
 
-VOID NS6_RndPrimCreatePlane( NS6_PRIM *Pr, VEC P, VEC W, VEC L, INT SplitW, INT SplitH )
+VOID NS6_RndPrimCreatePlane( ns6PRIM *Pr, VEC P, VEC W, VEC L, INT SplitW, INT SplitH )
 {
   INT i, j;
 
@@ -89,19 +89,19 @@ VOID NS6_RndPrimCreatePlane( NS6_PRIM *Pr, VEC P, VEC W, VEC L, INT SplitW, INT 
 /* Load primitive from '*.OBJ' file function.
  * ARGUMENTS:
  *   - pointer to primitive to load:
- *       NS6_4PRIM *Pr;
+ *       ns6PRIM *Pr;
  *   - '*.OBJ' file name:
  *       CHAR *FileName;
  * RETURNS:
  *   (BOOL) TRUE if success, FALSE otherwise.
  */
-BOOL NS6_RndPrimLoad( NS6_PRIM *Pr, CHAR *FileName )
+BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName )
 {
   FILE *F;
   INT i, nv = 0, nind = 0;
   static CHAR Buf[1000];
 
-  memset(Pr, 0, sizeof(NS6_PRIM));
+  memset(Pr, 0, sizeof(ns6PRIM));
   if ((F = fopen(FileName, "r")) == NULL)
     return FALSE;
 

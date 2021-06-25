@@ -2,59 +2,84 @@
 #include <string.h>
 #include "rnd.h"
 
-BOOL NS6_RndPrimCreate( NS6_PRIM *Pr, INT NoofV, INT NoofI)
+VOID NS6_RndPrimCreate( ns6PRIM *Pr, ns6VERTEX *V, INT NumOfV, INT *I, INT NumOfI )
 {
-  INT size;
+  memset(Pr, 0, sizeof(ns6PRIM));
 
-  memset(Pr, 0, sizeof(NS6_PRIM));
-  size = sizeof(NS6_VERTEX) * NoofV + sizeof(INT) * NoofI;
+  if (V != NULL && NumOfV != 0)
+  {
+    glGenBuffers(1, &Pr->VBuf);
+    glGenVertexArrays(1, &Pr->VA);
 
-  if ((Pr->V = malloc(size)) == NULL)
-    return FALSE;
-  Pr->I = (INT *)(Pr->V + NoofV);
-  Pr->NumOfI = NoofI;
-  Pr->NumOfV = NoofV;
+    glBindVertexArray(Pr->VA);
+    glBindBuffer(GL_ARRAY_BUFFER, Pr->VBuf);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ns6VERTEX) * NumOfV, V, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, sizeof(ns6VERTEX), (VOID *)0);                                 /* position */
+    glVertexAttribPointer(1, 2, GL_FLOAT, FALSE, sizeof(ns6VERTEX), (VOID *)sizeof(VEC));                       /* texture coordinates */
+    glVertexAttribPointer(2, 3, GL_FLOAT, FALSE, sizeof(ns6VERTEX), (VOID *)(sizeof(VEC) + sizeof(VEC2)));      /* normal */
+    glVertexAttribPointer(3, 4, GL_FLOAT, FALSE, sizeof(ns6VERTEX), (VOID *)(sizeof(VEC) * 2 + sizeof(VEC2)));  /* color */
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+    glBindVertexArray(0);
+  }
+
+  if (I != NULL && NumOfI != 0)
+  {
+    glGenBuffers(1, &Pr->IBuf);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INT) * NumOfI, I, GL_STATIC_DRAW);
+    Pr->NumOfElements = NumOfI;
+  }
+  else
+    Pr->NumOfElements = NumOfV;
   Pr->Trans = MatrIdentity();
-  memset(Pr->V, 0, size);
+} /* End of 'NS6_RndPrimCreate' function */
 
-  return TRUE;
-}
-
-VOID NS6_RndPrimFree( NS6_PRIM *Pr)
+/* NS6_RndPrimFree */
+VOID NS6_RndPrimFree( ns6PRIM *Pr )
 {
-  if (Pr->V != NULL)
-    free(Pr->V);
-  memset(Pr, 0, sizeof(NS6_PRIM));
-}
+  glBindVertexArray(Pr->VA);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &Pr->VBuf);
+  glBindVertexArray(0);
+  glDeleteVertexArrays(1, &Pr->VA);
 
-VOID NS6_RndPrimDraw( NS6_PRIM *Pr, MATR World )
+  glDeleteBuffers(1, &Pr->IBuf);
+
+  memset(Pr, 0, sizeof(ns6PRIM));
+}/* NS6_PrimFree */
+
+/* NS6_PrimDraw */
+VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 {
-  INT i;
-  MATR wvp = MatrMulMatr(MatrMulMatr(Pr->Trans, World), NS6_RndMatrVP);
-  POINT *pnts;
+  MATR wvp = MatrMulMatr3(Pr->Trans, World, NS6_RndMatrVP);
 
-  if ((pnts = malloc(sizeof(POINT) * Pr->NumOfV)) == NULL)
-    return;
+  INT ProgId = NS6_RndShaders[0].ProgId, loc;
 
-  for (i = 0; i < Pr->NumOfV; i++)
-  {
-    VEC p = VecMulMatr(Pr->V[i].P, wvp);
+  glUseProgram(ProgId);
 
-    pnts[i].x = (INT)((p.X + 1) * NS6_RndFrameW / 2);
-    pnts[i].y = (INT)((-p.Y + 1) * NS6_RndFrameH / 2);
-  }
+  if ((loc = glGetUniformLocation(ProgId, "MatrWVP")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
+  /*if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
+    glUniform1f(loc, ns6ANIM.Time); */
 
-  for (i = 0; i < Pr->NumOfI; i += 3)
-  {
-    MoveToEx(NS6_hRndDCFrame, pnts[Pr->I[i]].x, pnts[Pr->I[i]].y, NULL);
-    LineTo(NS6_hRndDCFrame, pnts[Pr->I[i + 1]].x, pnts[Pr->I[i + 1]].y);
-    LineTo(NS6_hRndDCFrame, pnts[Pr->I[i + 2]].x, pnts[Pr->I[i + 2]].y);
-    LineTo(NS6_hRndDCFrame, pnts[Pr->I[i]].x, pnts[Pr->I[i]].y);
-  }
-  free(pnts);
-}
+  /* Send matrix to OpenGL /v.1.0 */
+  glLoadMatrixf(wvp.A[0]);
 
-VOID NS6_RndPrimCreateSphere( NS6_PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
+  glBindVertexArray(Pr->VA);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+  glDrawElements(GL_TRIANGLES, Pr->NumOfElements, GL_UNSIGNED_INT, NULL);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  glUseProgram(0);
+}/* End of 'NS6_PrimDraw' function */
+/*
+VOID NS6_RndPrimCreateSphere( ns6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
 {
   INT i, j, k; 
   DOUBLE phi, theta, pi = 3.14159265558979323846;
@@ -76,32 +101,23 @@ VOID NS6_RndPrimCreateSphere( NS6_PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH
       Pr->I[k++] = (i + 1) * SplitW + j + 1;
     }
 }
-
-VOID NS6_RndPrimCreatePlane( NS6_PRIM *Pr, VEC P, VEC W, VEC L, INT SplitW, INT SplitH )
-{
-  INT i, j;
-
-  for (i = 0; i < SplitH; i++)
-    for (j = 0; j < SplitW; j++)
-      Pr->V[i * SplitW + j].P = VecAddVec(VecAddVec(VecMulNum(W, j / (SplitW - 1.0)), VecMulNum(L, i / (SplitH - 1.0))), P);
-}
-
+*/
 /* Load primitive from '*.OBJ' file function.
  * ARGUMENTS:
  *   - pointer to primitive to load:
- *       NS6_4PRIM *Pr;
+ *       ns6PRIM *Pr;
  *   - '*.OBJ' file name:
  *       CHAR *FileName;
  * RETURNS:
  *   (BOOL) TRUE if success, FALSE otherwise.
  */
-BOOL NS6_RndPrimLoad( NS6_PRIM *Pr, CHAR *FileName )
+BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName )
 {
   FILE *F;
   INT i, nv = 0, nind = 0;
   static CHAR Buf[1000];
 
-  memset(Pr, 0, sizeof(NS6_PRIM));
+  memset(Pr, 0, sizeof(ns6PRIM));
   if ((F = fopen(FileName, "r")) == NULL)
     return FALSE;
 
@@ -172,4 +188,3 @@ BOOL NS6_RndPrimLoad( NS6_PRIM *Pr, CHAR *FileName )
   fclose(F);
   return TRUE;
 } /* End of 'NS6_RndPrimLoad' function */
-

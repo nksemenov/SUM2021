@@ -1,27 +1,28 @@
 #include "../unit/units.h"
-#include "../anim/anim.h"
+//#include "anim.h"
 
-static VOID NS6_UnitInit( NS6_UNIT * Uni, NS6_ANIM *Ani )
+
+static VOID NS6_UnitInit( ns6UNIT *Uni, ns6ANIM *Ani )
 {
 }
 
-static VOID NS6_UnitClose( NS6_UNIT * Uni, NS6_ANIM *Ani )
+static VOID NS6_UnitClose( ns6UNIT *Uni, ns6ANIM *Ani )
 {
 }
 
-static VOID NS6_UnitResponse( NS6_UNIT * Uni, NS6_ANIM *Ani )
+static VOID NS6_UnitResponse( ns6UNIT *Uni, ns6ANIM *Ani )
 {
 }
 
-static VOID NS6_UnitRender( NS6_UNIT * Uni, NS6_ANIM *Ani )
+static VOID NS6_UnitRender( ns6UNIT *Uni, ns6ANIM *Ani )
 {
 }
 
-NS6_UNIT * NS6_AnimUnitCreate( INT Size )
+ns6UNIT * NS6_AnimUnitCreate( INT Size )
 {
-  NS6_UNIT *Uni;
+  ns6UNIT *Uni;
 
-  if (Size < sizeof(NS6_UNIT) || (Uni = malloc(Size)) == NULL)
+  if (Size < sizeof(ns6UNIT) || (Uni = malloc(Size)) == NULL)
     return NULL;
 
   memset(Uni, 0, Size);

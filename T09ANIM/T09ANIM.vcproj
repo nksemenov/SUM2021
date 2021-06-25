@@ -194,12 +194,20 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\anim\timer.c"
+					>
+				</File>
+				<File
 					RelativePath=".\src\anim\unit.c"
 					>
 				</File>
 				<Filter
 					Name="Rendering Subsystem"
 					>
+					<File
+						RelativePath=".\src\anim\rnd\glew.c"
+						>
+					</File>
 					<File
 						RelativePath=".\src\anim\rnd\rnd.h"
 						>
@@ -216,6 +224,14 @@
 						RelativePath=".\src\anim\rnd\rndprim.c"
 						>
 					</File>
+					<Filter
+						Name="Resoutses"
+						>
+						<File
+							RelativePath=".\src\anim\rnd\res\rndshd.c"
+							>
+						</File>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="Math Support"
@@ -238,7 +254,11 @@
 				Name="Units"
 				>
 				<File
-					RelativePath=".\src\unit\u_ball.c"
+					RelativePath=".\src\unit\u_ctrl.c"
+					>
+				</File>
+				<File
+					RelativePath=".\src\unit\u_deer.c"
 					>
 				</File>
 				<File

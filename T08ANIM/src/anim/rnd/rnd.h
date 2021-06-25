@@ -34,32 +34,32 @@ VOID NS6_RndProjSet( VOID );
 
 VOID NS6_RndCamSet( VEC Loc, VEC At, VEC Up );
 
-typedef struct tgNS6_VERTEX
+typedef struct tgns6VERTEX
 {
   VEC P;
-} NS6_VERTEX;
+} ns6VERTEX;
 
-typedef struct tgNS6_PRIM
+typedef struct tgns6PRIM
 {
-  NS6_VERTEX *V;
+  ns6VERTEX *V;
   INT NumOfV;
 
   INT *I;
   INT NumOfI;
 
   MATR Trans;
-} NS6_PRIM;
+} ns6PRIM;
 
-BOOL NS6_RndPrimCreate( NS6_PRIM *Pr, INT NoofV, INT NoofI);
+BOOL NS6_RndPrimCreate( ns6PRIM *Pr, INT NoofV, INT NoofI);
 
-VOID NS6_RndPrimFree( NS6_PRIM *Pr);
+VOID NS6_RndPrimFree( ns6PRIM *Pr);
 
-VOID NS6_RndPrimDraw( NS6_PRIM *Pr, MATR World );
+VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World );
 
-VOID NS6_RndPrimCreateSphere( NS6_PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH );
+VOID NS6_RndPrimCreateSphere( ns6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH );
 
-VOID NS6_RndPrimCreatePlane( NS6_PRIM *Pr, VEC P, VEC W, VEC L, INT SplitW, INT SplitH );
+VOID NS6_RndPrimCreatePlane( ns6PRIM *Pr, VEC P, VEC W, VEC L, INT SplitW, INT SplitH );
 
-BOOL NS6_RndPrimLoad( NS6_PRIM *Pr, CHAR *FileName );
+BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName );
 
 #endif
