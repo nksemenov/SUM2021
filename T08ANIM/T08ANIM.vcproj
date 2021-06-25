@@ -194,6 +194,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\anim\timer.c"
+					>
+				</File>
+				<File
 					RelativePath=".\src\anim\unit.c"
 					>
 				</File>
@@ -237,6 +241,10 @@
 			<Filter
 				Name="Units"
 				>
+				<File
+					RelativePath=".\src\unit\u_ctrl.c"
+					>
+				</File>
 				<File
 					RelativePath=".\src\unit\u_deer.c"
 					>

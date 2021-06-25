@@ -56,7 +56,7 @@ VOID NS6_RndPrimFree( ns6PRIM *Pr )
 /* NS6_PrimDraw */
 VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 {
-  MATR wvp = MatrMulMatr3(Pr->Trans, World, NS6_RndMatrVP);
+  MATR wvp = MatrMulMatr(Pr->Trans, MatrMulMatr(World, NS6_RndMatrVP));
 
   INT ProgId = NS6_RndShaders[0].ProgId, loc;
 
@@ -64,8 +64,8 @@ VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 
   if ((loc = glGetUniformLocation(ProgId, "MatrWVP")) != -1)
     glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
-  /*if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
-    glUniform1f(loc, ns6ANIM.Time); */
+//  if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
+//    glUniform1f(loc, ns6PRIM.Time);
 
   /* Send matrix to OpenGL /v.1.0 */
   glLoadMatrixf(wvp.A[0]);
@@ -78,30 +78,6 @@ VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 
   glUseProgram(0);
 }/* End of 'NS6_PrimDraw' function */
-/*
-VOID NS6_RndPrimCreateSphere( ns6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
-{
-  INT i, j, k; 
-  DOUBLE phi, theta, pi = 3.14159265558979323846;
-  
-  NS6_RndPrimCreate(Pr, SplitW * SplitH, (SplitW - 1) * (SplitH - 1) * 6);
-  for (i = 0, theta = 0; i < SplitH; i++, theta += 2 * pi / (SplitH - 1))
-    for (j = 0, phi = 0; j < SplitW; j++, phi += 2 * pi / (SplitW - 1))
-      Pr->V[i * SplitW + j].P = VecSet(C.X + (R +  (R / 2) * cos(theta)) * cos(phi), C.Y + (R + (R / 2) * cos(theta)) * sin(phi), C.Z + (R / 2) *sin(theta));
-  
-  for (k = 0, i = 0; i < SplitH - 1; i++)
-    for (j = 0; j < SplitW - 1; j++)
-    {
-      Pr->I[k++] = i * SplitW + j;
-      Pr->I[k++] = (i + 1) * SplitW + j;
-      Pr->I[k++] = i * SplitW + j + 1;
-
-      Pr->I[k++] = (i + 1) * SplitW + j;
-      Pr->I[k++] = i * SplitW + j + 1;
-      Pr->I[k++] = (i + 1) * SplitW + j + 1;
-    }
-}
-*/
 /* Load primitive from '*.OBJ' file function.
  * ARGUMENTS:
  *   - pointer to primitive to load:
@@ -111,10 +87,13 @@ VOID NS6_RndPrimCreateSphere( ns6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH 
  * RETURNS:
  *   (BOOL) TRUE if success, FALSE otherwise.
  */
+
 BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName )
 {
   FILE *F;
-  INT i, nv = 0, nind = 0;
+  INT i, nv = 0, nind = 0, size;
+  ns6VERTEX *V;
+  INT *Ind;
   static CHAR Buf[1000];
 
   memset(Pr, 0, sizeof(ns6PRIM));
@@ -137,11 +116,11 @@ BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName )
     }
   }
 
-  if (!NS6_RndPrimCreate(Pr, nv, nind))
-  {
-    fclose(F);
+  size = sizeof(ns6VERTEX) * nv + sizeof(INT) * nind;
+  if ((V = malloc(size)) == NULL)
     return FALSE;
-  }
+  Ind = (INT *)(V + nv);
+  memset(V, 0, size);
 
   /* Load primitive */
   rewind(F);
@@ -152,9 +131,11 @@ BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName )
     if (Buf[0] == 'v' && Buf[1] == ' ')
     {
       DBL x, y, z;
+      VEC4 c = {Rnd0(), Rnd0(), Rnd0(), 1};
 
       sscanf(Buf + 2, "%lf%lf%lf", &x, &y, &z);
-      Pr->V[nv++].P = VecSet(x, y, z);
+      V[nv].C = c;
+      V[nv++].P = VecSet(x, y, z);
     }
     else if (Buf[0] == 'f' && Buf[1] == ' ')
     {
@@ -175,16 +156,18 @@ BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName )
             n1 = nc;
           else
           {
-            Pr->I[nind++] = n0;
-            Pr->I[nind++] = n1;
-            Pr->I[nind++] = nc;
+            Ind[nind++] = n0;
+            Ind[nind++] = n1;
+            Ind[nind++] = nc;
             n1 = nc;
           }
           n++;
         }
     }
   }
-
   fclose(F);
+  NS6_RndPrimCreate(Pr, V, nv, Ind, nind);
+  free(V);
   return TRUE;
-} /* End of 'NS6_RndPrimLoad' function */
+}
+/* End of 'NS6_RndPrimLoad' function */

@@ -32,7 +32,7 @@ VOID NS6_RndShdLog( CHAR *FileNamePrefix, CHAR *ShaderName, CHAR *Text )
 {
   FILE *F;
 
-  if ((F = fopen("BIN/SHADERS/shd{30}nm4.log", "a")) == NULL)
+  if ((F = fopen("BIN/SHADERS/shd{30}ns6.log", "a")) == NULL)
     return;
   fprintf(F, "%s : %s\n%s\n\n", FileNamePrefix, ShaderName, Text);
   fclose(F);

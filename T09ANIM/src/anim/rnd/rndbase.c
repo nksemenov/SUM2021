@@ -1,9 +1,16 @@
+/* FILE NAME: rndbase.c
+* PROGRAMMER: ns6
+* DATE: 17.06.2021
+* PURPOSE: 3D animation rendering function module.
+*/
+
 #include "rnd.h"
 #include <wglew.h>
 #include <gl/wglext.h>
 
 #pragma comment(lib, "opengl32")
 
+/* NS6_RndInit */
 VOID NS6_RndInit( HWND hWnd )
 {
   INT i, nums;
@@ -49,8 +56,7 @@ VOID NS6_RndInit( HWND hWnd )
   /* Initializing GLEW library */
   if (glewInit() != GLEW_OK)
   {
-    MessageBox(NS6_hRndWnd, "Error extensions initializing", "Error",
-      MB_ICONERROR | MB_OK);
+    MessageBox(NS6_hRndWnd, "Error extensions initializing", "Error", MB_ICONERROR | MB_OK);
     exit(0);
   }
 
@@ -69,31 +75,75 @@ VOID NS6_RndInit( HWND hWnd )
 
   NS6_hRndGLRC = hRC;
   wglMakeCurrent(NS6_hRndDC, NS6_hRndGLRC);
+
   /* Set default OpenGL parameters */
   glEnable(GL_DEPTH_TEST);
-  glClearColor(0.08, 0.16, 0.08, 1);
+  glClearColor(0.5, 0.5, 0.5, 1);
   NS6_RndShadersInit();
 
   /* Render perametrs */
-  NS6_RndProjSize = 0.1;
+  NS6_RndProjSize = (FLT)0.1;
   NS6_RndProjDist = NS6_RndProjSize;
   NS6_RndProjFarClip = 300;
   NS6_RndFrameW = 50;
   NS6_RndFrameH = 50;
-  NS6_RndCamSet(VecSet(0, 0, 30), VecSet(0, 0, 0), VecSet(0, 1, 0));
+  NS6_RndCamSet(VecSet(0, 0, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
 }/* End of 'NS6_RndInit' function */
 
+/* NS6_RndClose */
 VOID NS6_RndClose( VOID )
 {
-  if (NS6_hRndBmFrame != NULL)
-    DeleteObject(NS6_hRndBmFrame);
-  DeleteDC(NS6_hRndDCFrame);
   NS6_RndShadersClose();
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(NS6_hRndGLRC);
   ReleaseDC(NS6_hRndWnd, NS6_hRndDC);
-}
+}/* End of 'NS6_RndClose' function */
 
+/* NS6_RndCopyFrame */
+VOID NS6_RndCopyFrame( VOID )
+{
+  SwapBuffers(NS6_hRndDC);
+}/* End of 'NS6_RndCopyFrame' function */
+
+/* NS6_RndProjSet */
+VOID NS6_RndProjSet( VOID )
+{
+  FLT rx, ry;
+
+  rx = ry = NS6_RndProjSize;
+
+  /* Correct aspect ratio */
+  if (NS6_RndFrameW > NS6_RndFrameH)
+    rx *= (FLT)NS6_RndFrameW / NS6_RndFrameH;
+  else
+    ry *= (FLT)NS6_RndFrameH / NS6_RndFrameW;
+
+  NS6_RndMatrProj = MatrFrustum(-rx / 2, rx / 2, -ry / 2, ry / 2, NS6_RndProjDist, NS6_RndProjFarClip);
+  NS6_RndMatrVP = MatrMulMatr(NS6_RndMatrView, NS6_RndMatrProj);
+}/* NS6_RndProjSet */
+
+/* NS6_RndCamset */
+VOID NS6_RndCamSet( VEC Loc, VEC At, VEC Up )
+{
+  NS6_RndMatrView = MatrView(Loc, At, Up);
+  NS6_RndMatrVP = MatrMulMatr(NS6_RndMatrView, NS6_RndMatrProj);
+}/* End of 'NS6_RndCamSet' function */
+
+/* NS6_RndStart */
+VOID NS6_RndStart( VOID )
+{
+  NS6_RndShadersUpdate();
+  /* Clear frame */
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}/* End of 'NS6_RndStart' function */
+
+/* NS6_RndEnd */
+VOID NS6_RndEnd( VOID )
+{
+  glFinish();
+}/* End of 'NS6_RndEnd' function */
+
+/* NS6_RndResize */
 VOID NS6_RndResize( INT W, INT H )
 {
   glViewport(0, 0, W, H);
@@ -102,42 +152,7 @@ VOID NS6_RndResize( INT W, INT H )
   NS6_RndFrameH = H;
 
   NS6_RndProjSet();
-}
+}/* End of 'NS6_RndResize' function */
 
-VOID NS6_RndCopyFrame( HDC hDC )
-{
-  SwapBuffers(NS6_hRndDC);
-}
 
-VOID NS6_RndStart( VOID )
-{
-  NS6_RndShadersUpdate();
-  /* Clear frame */
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-VOID NS6_RndEnd( VOID )
-{
-  glFinish();
-}
-
-VOID NS6_RndProjSet( VOID )
-{
-  DBL rx, ry;
-
-  rx = ry = NS6_RndProjSize;
-
-  if (NS6_RndFrameW > NS6_RndFrameH)
-    rx *= (DBL)NS6_RndFrameW / NS6_RndFrameH;
-  else
-    ry *= (DBL)NS6_RndFrameH / NS6_RndFrameW;
-
-  NS6_RndMatrProj = MatrFrustum(-rx / 2, rx / 2, -ry / 2, ry / 2, NS6_RndProjDist, NS6_RndProjFarClip);
-  NS6_RndMatrVP = MatrMulMatr(NS6_RndMatrView, NS6_RndMatrProj);
-}
-
-VOID NS6_RndCamSet( VEC Loc, VEC At, VEC Up )
-{
-  NS6_RndMatrView = MatrView(Loc, At, Up);
-  NS6_RndMatrVP = MatrMulMatr(NS6_RndMatrView, NS6_RndMatrProj);
-}
+/* END OF 'rndbase.c' FILE */

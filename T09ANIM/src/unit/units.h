@@ -3,14 +3,7 @@
 
 #include "../anim/anim.h"
 
-ns6UNIT * NS6_UnitCreatDeer( VOID );
-
-/*VOID NS6_UnitInit( ns6UNIT *Uni, ns6ANIM *Ani );
-
-VOID NS6_UnitClose( ns6UNIT *Uni, ns6ANIM *Ani );
-
-VOID NS6_UnitResponse( ns6UNIT *Uni, ns6ANIM *Ani );
-
-VOID NS6_UnitRender( ns6UNIT *Uni, ns6ANIM *Ani );*/
+ns6UNIT * NS6_UnitCreateDeer( VOID );
+ns6UNIT * NS6_UnitCreateControl( VOID );
 
 #endif

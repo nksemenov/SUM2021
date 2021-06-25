@@ -1,5 +1,4 @@
-#include "../unit/units.h"
-//#include "anim.h"
+#include "anim.h"
 
 
 static VOID NS6_UnitInit( ns6UNIT *Uni, ns6ANIM *Ani )

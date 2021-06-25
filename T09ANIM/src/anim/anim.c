@@ -18,7 +18,6 @@ VOID NS6_AnimInit( HWND hWnd )
   /* Fill animation context */
   NS6_Anim.hWnd = hWnd;
   NS6_RndInit(hWnd);
-  NS6_Anim.hDC = NS6_hRndDCFrame;
   NS6_Anim.W = NS6_RndFrameW;
   NS6_Anim.H = NS6_RndFrameH;
 
@@ -53,9 +52,9 @@ VOID NS6_AnimResize( INT W, INT H )
 /* NS6_AnimResize */
 
 /* NS6_AnimCopyFrame */
-VOID NS6_AnimCopyFrame( HDC hDC )
+VOID NS6_AnimCopyFrame( VOID )
 {
-  NS6_RndCopyFrame(hDC);
+  NS6_RndCopyFrame();
 }
 /* End of 'NS6_AnimCopyFrame' function */
 

@@ -70,7 +70,7 @@ VOID NS6_AnimRender( VOID );
 VOID NS6_AnimAddUnit( ns6UNIT *Uni );
 
 /* AnimCopyFrame */
-VOID NS6_AnimCopyFrame( HDC hDC );
+VOID NS6_AnimCopyFrame( VOID );
 
 /* AnimResize */
 VOID NS6_AnimResize( INT W, INT H );

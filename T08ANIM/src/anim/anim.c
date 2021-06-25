@@ -64,6 +64,7 @@ VOID NS6_AnimCopyFrame( HDC hDC )
 VOID NS6_AnimRender( VOID )
 {
   INT i;
+  POINT pt;
 
   /* Timer response */
   NS6_TimerResponse();
@@ -75,6 +76,24 @@ VOID NS6_AnimRender( VOID )
   for (i = 0; i < NS6_Anim.NumOfUnits; i++)
     NS6_Anim.Units[i]->Render(NS6_Anim.Units[i], &NS6_Anim);
   NS6_RndEnd();
+
+  /* Keyboard */
+  GetKeyboardState(NS6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+  {
+    NS6_Anim.Keys[i] >>= 7;
+    NS6_Anim.KeysClick[i] = NS6_Anim.Keys[i] && NS6_Anim.KeysOld[i];
+  }
+  memcpy(NS6_Anim.KeysOld, NS6_Anim.Keys, 256);
+
+  /* Mouse */
+  GetCursorPos(&pt);
+  ScreenToClient(NS6_Anim.hWnd, &pt);
+
+  NS6_Anim.Mx = pt.x;
+  NS6_Anim.My = pt.y;  
+  NS6_Anim.Mdx = pt.x - NS6_Anim.Mx;
+  NS6_Anim.Mdy = pt.y - NS6_Anim.My;
 }
 /* End of 'NS6_AnimRender' function */
 
@@ -89,7 +108,7 @@ VOID NS6_AnimAddUnit( ns6UNIT *Uni )
 
 
 /* NS6_FlipFullScreen */
-/*VOID NS6_AnimFlipFullScreen( VOID )
+VOID NS6_AnimFlipFullScreen( VOID )
 {
   static BOOL IsFullScreen = FALSE;
   static RECT SaveRC;
@@ -98,15 +117,15 @@ VOID NS6_AnimAddUnit( ns6UNIT *Uni )
   {
     RECT rc;
     HMONITOR hmon;
-    HMONITORINFOEX moninfo;
-*/    
+    MONITORINFOEX moninfo;
+
     /* Saving old window size */
-/*    GetWindowRect(NS6_hRndWnd, &SaveRC);
+    GetWindowRect(NS6_hRndWnd, &SaveRC);
 
     hmon = MonitorFromWindow(NS6_hRndWnd, MONITOR_DEFAULTTONEAREST);
-*/    
+
     /* Getting monitor info */
-/*    moninfo.cbSize = sizeof(moninfo);
+    moninfo.cbSize = sizeof(moninfo);
     GetMonitorInfo(hmon, (MONITORINFO *)&moninfo);
 
     rc = moninfo.rcMonitor;
@@ -127,7 +146,7 @@ VOID NS6_AnimAddUnit( ns6UNIT *Uni )
     SWP_NOOWNERZORDER);
     IsFullScreen = FALSE;
   }
-}*/
+}
 /* End of 'NS6_AnimFlipFullScreen' function */
 //#endif
 

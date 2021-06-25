@@ -7,11 +7,12 @@
 #include "../../def.h"
 
 extern HWND NS6_hRndWnd;
-extern HDC NS6_hRndDCFrame;
+extern HGLRC NS6_hRndGLRC;
+extern HDC NS6_hRndDC;
 extern HBITMAP NS6_hRndBmFrame;
 extern INT NS6_RndFrameW, NS6_RndFrameH;
 
-extern DBL
+extern FLT
   NS6_RndProjSize,
   NS6_RndProjDist,
   NS6_RndProjFarClip;
@@ -21,23 +22,7 @@ extern MATR
   NS6_RndMatrProj,
   NS6_RndMatrVP;
 
-VOID NS6_RndInit( HWND hWnd );
-
-VOID NS6_RndClose( VOID );
-
-VOID NS6_RndResize( INT W, INT H );
-
-VOID NS6_RndCopyFrame( HDC hDC );
-
-VOID NS6_RndStart( VOID );
-
-VOID NS6_RndEnd( VOID );
-
-VOID NS6_RndProjSet( VOID );
-
-VOID NS6_RndCamSet( VEC Loc, VEC At, VEC Up );
-
-typedef struct tgns6VERTEX
+typedef struct tagns6VERTEX
 {
   VEC P;
   VEC2 T;
@@ -45,7 +30,7 @@ typedef struct tgns6VERTEX
   VEC4 C;
 } ns6VERTEX;
 
-typedef struct tgns6PRIM
+typedef struct tagns6PRIM
 {
   ns6VERTEX *V;
   INT NumOfV;
@@ -61,15 +46,15 @@ typedef struct tgns6PRIM
 
 BOOL NS6_RndPrimLoad( ns6PRIM *Pr, CHAR *FileName );
 
-VOID NS6_RndInit( HWND hWnd );/**/
+VOID NS6_RndInit( HWND hWnd );
 
-VOID NS6_RndClose( VOID );/**/
+VOID NS6_RndClose( VOID );
 
-VOID NS6_RndCopyFrame( VOID );/**/
+VOID NS6_RndCopyFrame( VOID );
 
-VOID NS6_RndProjSet( VOID );/**/
+VOID NS6_RndProjSet( VOID );
 
-VOID NS6_RndCamSet( VEC Loc, VEC At, VEC Up );/**/
+VOID NS6_RndCamSet( VEC Loc, VEC At, VEC Up );
 
 VOID NS6_RndPrimCreate( ns6PRIM *Pr, ns6VERTEX *V, INT NumOfV, INT *I, INT NumOfI );
 

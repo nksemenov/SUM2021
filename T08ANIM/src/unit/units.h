@@ -5,12 +5,4 @@
 
 ns6UNIT * NS6_UnitCreatDeer( VOID );
 
-VOID NS6_UnitInit( ns6UNIT *Uni, ns6ANIM *Ani );
-
-VOID NS6_UnitClose( ns6UNIT *Uni, ns6ANIM *Ani );
-
-NS6_UnitResponse( ns6UNIT *Uni, ns6ANIM *Ani );
-
-NS6_UnitRender( ns6UNIT *Uni, ns6ANIM *Ani );
-
 #endif

@@ -55,7 +55,7 @@ static VOID NS6_UnitResponse( ns6UNIT_DEER *Uni, ns6ANIM *Ani )
 */
 static VOID NS6_UnitRender( ns6UNIT_DEER *Uni, ns6ANIM *Ani )
 {
-  NS6_RndPrimDraw(&Uni->Deer, MatrRotateX(180 * sin(Ani->Time)));
+  NS6_RndPrimDraw(&Uni->Deer, MatrScale(VecSet(0.01, 0.01, 0.01)));
 }
 /* End of 'NS6_UnitRender' function */
 

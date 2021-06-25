@@ -224,6 +224,10 @@
 						RelativePath=".\src\anim\rnd\rndprim.c"
 						>
 					</File>
+					<File
+						RelativePath=".\src\anim\rnd\rndprim.h"
+						>
+					</File>
 					<Filter
 						Name="Resoutses"
 						>

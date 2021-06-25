@@ -1,5 +1,5 @@
 /* FILE NAME: mth.h
- * PROGRAMMER: VG4
+ * PROGRAMMER: ns6
  * DATE: 15.06.2021
  * PURPOSE: 3D math implementation module.
  */
@@ -52,24 +52,6 @@ typedef struct tagMATR
 {
   FLT A[4][4];
 } MATR;
-/* Add two vectors function.
- * ARGUMENTS:
- *   - vectors to be add:
- *       VEC V1, V2;
- * RETURNS:
- *   (VEC) result vector.
- */
-/*__inline VEC VecAddVec( VEC V1, VEC V2 )
-{
-  return VecSet(V1.X + V2.X, V1.Y + V2.Y, V1.Z + V2.Z);
-} /* End of 'VecAddVec' function */
-
-/* END OF 'mth.h' FILE */
-/* FILENAME: T08MTH.c
- * PROGRAMMER: NS6
- * DATE: 15.06.2021
- * PURPOSE: Math.
- */
 
 __inline VEC VecSet( FLT X, FLT Y, FLT Z )
 {

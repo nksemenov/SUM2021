@@ -3,10 +3,8 @@
  * DATE       : 17.06.2021
  * PURPOSE    : 3D animation.
  */
-#include "../def.h"
 
 #include "../unit/units.h"
-//#include "../anim/rnd/rnd.h"
 
 /* Window class name */
 #define NS6_WND_CLASS_NAME "My Window Class Name"
@@ -95,7 +93,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
 LRESULT CALLBACK NS6_WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam )
 {
   HDC hDC;
-  POINT pt;
+//  POINT pt;
   PAINTSTRUCT ps;
   static ns6PRIM Pr, PrS, PrF;
 
@@ -107,7 +105,7 @@ LRESULT CALLBACK NS6_WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam 
     return 0;   
   
   case WM_CREATE:
-    SetTimer(hWnd, 30, 1, NULL);    
+    SetTimer(hWnd, 30, 1, NULL);
     NS6_AnimInit(hWnd);
     return 0;
 
@@ -118,11 +116,7 @@ LRESULT CALLBACK NS6_WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam 
 
   case WM_TIMER:
     NS6_AnimRender();
-    
-    hDC = GetDC(hWnd);
-
-    NS6_AnimCopyFrame(hDC);
-    ReleaseDC(hWnd, hDC);
+    NS6_AnimCopyFrame();
     return 0;
 
   case WM_KEYDOWN:
@@ -132,7 +126,7 @@ LRESULT CALLBACK NS6_WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam 
 
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
-    NS6_AnimCopyFrame(hDC);
+    NS6_AnimCopyFrame();
     EndPaint(hWnd, &ps);
     return 0;
 

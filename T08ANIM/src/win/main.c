@@ -64,6 +64,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   
   /* Create Units */
   NS6_AnimAddUnit(NS6_UnitCreateDeer());
+  NS6_AnimAddUnit(NS6_UnitCreateControl());
 
   /* Message loop */
   while (TRUE)
@@ -107,61 +108,35 @@ LRESULT CALLBACK NS6_WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam 
   
   case WM_CREATE:
     SetTimer(hWnd, 30, 1, NULL);
-    /*NS6_RndInit(hWnd);
-    NS6_RndPrimCreate(&Pr, 4, 6);
-    Pr.V[0].P = VecSet(0.5, 0, 0);
-    Pr.V[1].P = VecSet(0.5, -1, 0);
-    Pr.V[2].P = VecSet(-0.5, -1, 0);
-    Pr.V[3].P = VecSet(-0.5, 0, 0);
-    Pr.I[0] = 0;
-    Pr.I[1] = 1;
-    Pr.I[2] = 2;
-    Pr.I[3] = 0;
-    Pr.I[4] = 2;
-    Pr.I[5] = 3;*/
-    //NS6_RndPrimCreateSphere(&PrS, VecSet(0, 0, 0), 1, 30, 30);
-    //NS6_RndPrimCreatePlane(&Pr, VecSet(5, 0, 5), VecSet(10, 0, 0), VecSet(0, 0, -10), 5, 5);
-    //NS6_RndPrimLoad(&PrF, "Deer.obj");
-    
     NS6_AnimInit(hWnd);
     return 0;
 
   case WM_SIZE:
-    //NS6_RndResize(LOWORD(lParam), HIWORD(lParam));
     NS6_AnimResize(LOWORD(lParam), HIWORD(lParam));
     SendMessage(hWnd, WM_TIMER, 0, 0);
     return 0;
 
-  case WM_TIMER:
-    //NS6_RndStart();
-    //GetCursorPos(&pt);
-    //ScreenToClient(hWnd, &pt);
-    //NS6_RndPrimDraw(&PrS, MatrMulMatr(MatrRotateX(pt.y / 3), MatrRotateY(pt.x / 3)));
-    //NS6_RndPrimDraw(&PrS, MatrMulMatr(MatrMulMatr(MatrRotateZ(clock() / 30), MatrRotateX(clock() / 10)), MatrRotateY(clock() / 20)));
-    //NS6_RndPrimDraw(&PrF, MatrMulMatr(MatrScale(VecSet(0.01, 0.01, 0.01)), MatrRotateY(clock() / 10)));
-    //NS6_RndEnd();
+  case WM_KEYDOWN:
+    if (wParam == VK_ESCAPE)
+      SendMessage(hWnd, WM_CLOSE, 0, 0);
+    return 0;
 
+  case WM_TIMER:
     NS6_AnimRender();
     
     hDC = GetDC(hWnd);
 
-    //NS6_RndCopyFrame(hDC);
     NS6_AnimCopyFrame(hDC);
     ReleaseDC(hWnd, hDC);
     return 0;
 
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
-    //NS6_RndCopyFrame(hDC);
     NS6_AnimCopyFrame(hDC);
     EndPaint(hWnd, &ps);
     return 0;
 
   case WM_DESTROY:
-    /*NS6_RndPrimFree(&Pr);
-    NS6_RndPrimFree(&PrS);
-    NS6_RndPrimFree(&PrF);
-    NS6_RndClose();*/
     NS6_AnimClose();
     KillTimer(hWnd, 30);
     PostMessage(hWnd, WM_QUIT, 0, 0);

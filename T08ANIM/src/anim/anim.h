@@ -38,6 +38,15 @@ struct tagns6ANIM
   FPS; /* Frames per second value */
   BOOL
   IsPause; /* Pause flag */
+
+  /* Keyboard */
+  BYTE
+    Keys[256],
+    KeysClick[256],
+  KeysOld[256];
+
+  /* Mouse */
+  INT Mx, My, Mz, Mdx, Mdy, Mdz;
 };
 
 /* struct tagUNIT */
