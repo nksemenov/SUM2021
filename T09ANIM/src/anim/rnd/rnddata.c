@@ -15,3 +15,4 @@ MATR
   NS6_RndMatrProj,
   NS6_RndMatrVP;
 
+VEC NS6_RndCamLoc;

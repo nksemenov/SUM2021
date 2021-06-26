@@ -56,16 +56,24 @@ VOID NS6_RndPrimFree( ns6PRIM *Pr )
 /* NS6_PrimDraw */
 VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 {
-  MATR wvp = MatrMulMatr(Pr->Trans, MatrMulMatr(World, NS6_RndMatrVP));
+  INT loc;
+  MATR
+    w = MatrMulMatr(Pr->Trans, World),
+    winv = MatrTranspose(MatrInverse(w)),
+    wvp = MatrMulMatr(w, NS6_RndMatrVP);
 
-  INT ProgId = NS6_RndShaders[0].ProgId, loc;
-
-  glUseProgram(ProgId);
+  INT ProgId = NS6_RndMtlApply(Pr->MtlNo);
 
   if ((loc = glGetUniformLocation(ProgId, "MatrWVP")) != -1)
     glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
-//  if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
-//    glUniform1f(loc, ns6PRIM.Time);
+  if ((loc = glGetUniformLocation(ProgId, "MatrW")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, w.A[0]);
+  if ((loc = glGetUniformLocation(ProgId, "MatrWInv")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, winv.A[0]);
+  if ((loc = glGetUniformLocation(ProgId, "CamLoc")) != -1)
+    glUniform3fv(loc, 1, &NS6_RndCamLoc.X);
+  //  if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
+  //    glUniform1f(loc, NS6_Anim.Time);
 
   /* Send matrix to OpenGL /v.1.0 */
   glLoadMatrixf(wvp.A[0]);

@@ -80,6 +80,8 @@ VOID NS6_RndInit( HWND hWnd )
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.5, 0.5, 0.5, 1);
   NS6_RndShadersInit();
+  NS6_RndTexturesInit();
+  NS6_RndMtlInit();
 
   /* Render perametrs */
   NS6_RndProjSize = (FLT)0.1;
@@ -93,6 +95,8 @@ VOID NS6_RndInit( HWND hWnd )
 /* NS6_RndClose */
 VOID NS6_RndClose( VOID )
 {
+  NS6_RndTexturesClose();
+  NS6_RndMtlClose();
   NS6_RndShadersClose();
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(NS6_hRndGLRC);
@@ -125,6 +129,7 @@ VOID NS6_RndProjSet( VOID )
 /* NS6_RndCamset */
 VOID NS6_RndCamSet( VEC Loc, VEC At, VEC Up )
 {
+  NS6_RndCamLoc = Loc;
   NS6_RndMatrView = MatrView(Loc, At, Up);
   NS6_RndMatrVP = MatrMulMatr(NS6_RndMatrView, NS6_RndMatrProj);
 }/* End of 'NS6_RndCamSet' function */

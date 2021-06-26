@@ -228,11 +228,27 @@
 						RelativePath=".\src\anim\rnd\rndprim.h"
 						>
 					</File>
+					<File
+						RelativePath=".\src\anim\rnd\rndprims.c"
+						>
+					</File>
 					<Filter
 						Name="Resoutses"
 						>
 						<File
+							RelativePath=".\src\anim\rnd\res\rndmtl.c"
+							>
+						</File>
+						<File
+							RelativePath=".\src\anim\rnd\res\rndres.h"
+							>
+						</File>
+						<File
 							RelativePath=".\src\anim\rnd\res\rndshd.c"
+							>
+						</File>
+						<File
+							RelativePath=".\src\anim\rnd\res\rndtex.c"
 							>
 						</File>
 					</Filter>

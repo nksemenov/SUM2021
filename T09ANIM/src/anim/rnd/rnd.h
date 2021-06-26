@@ -4,7 +4,7 @@
 #define GLEW_STATIC
 #include <glew.h>
 
-#include "../../def.h"
+#include "res/rndres.h"
 
 extern HWND NS6_hRndWnd;
 extern HGLRC NS6_hRndGLRC;
@@ -21,6 +21,8 @@ extern MATR
   NS6_RndMatrView,
   NS6_RndMatrProj,
   NS6_RndMatrVP;
+
+extern VEC NS6_RndCamLoc;
 
 typedef struct tagns6VERTEX
 {
@@ -40,6 +42,7 @@ typedef struct tagns6PRIM
 
   INT VA, VBuf, IBuf;
   INT NumOfElements;
+  INT MtlNo;
 
   MATR Trans;
 } ns6PRIM;
@@ -68,23 +71,58 @@ VOID NS6_RndEnd( VOID );
 
 VOID NS6_RndResize( INT W, INT H );
 
-#define NS6_STR_MAX 300
 
-typedef struct tagns6SHADER
+/***
+ * Primitive collection support
+ ***/
+
+/* Primitive collection data type */
+typedef struct tagns6PRIMS
 {
-  CHAR Name[NS6_STR_MAX]; /* Shader filename prefix */
-  INT ProgId;             /* Shader program Id */
-} ns6SHADER;
+  INT NumOfPrims; /* Number of primitives in array */  
+  ns6PRIM *Prims; /* Array of primitives */
+  MATR Trans;     /* Common transformation matrix */
+} ns6PRIMS;
 
-#define NS6_MAX_SHADERS 30
-extern ns6SHADER NS6_RndShaders[NS6_MAX_SHADERS];
-extern INT NS6_RndShadersSize;
+/* Create array of primitives function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       ns6PRIMS *Prs;
+ *   - number of primitives to be add:
+ *       INT NumOfPrims;
+ * RETURNS:
+ *   (BOOL) TRUE if successful, FALSE otherwise.
+ */
+BOOL NS6_RndPrimsCreate( ns6PRIMS *Prs, INT NumOfPrims );
 
+/* Delete array of primitives function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       ns6PRIMS *Prs;
+ * RETURNS: None.
+ */
+VOID NS6_RndPrimsFree( ns6PRIMS *Prs );
 
-VOID NS6_RndShadersInit( VOID );
-VOID NS6_RndShadersClose( VOID );
-INT NS6_RndShaderAdd( CHAR *FileNamePrefix );
-VOID NS6_RndShadersUpdate( VOID );
+/* Draw array of primitives function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       ns6PRIMS *Prs;
+ *   - global transformation matrix:
+ *       MATR World;
+ * RETURNS: None.
+ */
+VOID NS6_RndPrimsDraw( ns6PRIMS *Prs, MATR World );
+
+/* Load array of primitives from .G3DM file function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       ns6PRIMS *Prs;
+ *   - file name:
+ *       CHAR *FileName;
+ * RETURNS:
+ *   (BOOL) TRUE if successful, FALSE otherwise.
+ */
+BOOL NS6_RndPrimsLoad( ns6PRIMS *Prs, CHAR *FileName );
 
 
 #endif

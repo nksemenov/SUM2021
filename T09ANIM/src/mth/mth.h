@@ -42,6 +42,11 @@ typedef struct tagVEC2
   FLT X, Y;
 } VEC2;
 
+typedef struct tagVEC1
+{
+  FLT X;
+} VEC1;
+
 /* types for 4D vectors */
 typedef struct tagVEC4
 {
@@ -56,6 +61,13 @@ typedef struct tagMATR
 __inline VEC VecSet( FLT X, FLT Y, FLT Z )
 {
   VEC v = {X, Y, Z};
+
+  return v;
+}
+
+__inline VEC VecSet1( FLT X )
+{
+  VEC v = {X, X, X};
 
   return v;
 }

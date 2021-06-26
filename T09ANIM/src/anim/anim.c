@@ -88,10 +88,10 @@ VOID NS6_AnimRender( VOID )
   GetCursorPos(&pt);
   ScreenToClient(NS6_Anim.hWnd, &pt);
 
-  NS6_Anim.Mx = pt.x;
-  NS6_Anim.My = pt.y;  
   NS6_Anim.Mdx = pt.x - NS6_Anim.Mx;
   NS6_Anim.Mdy = pt.y - NS6_Anim.My;
+  NS6_Anim.Mx = pt.x;
+  NS6_Anim.My = pt.y;
 }
 /* End of 'NS6_AnimRender' function */
 
