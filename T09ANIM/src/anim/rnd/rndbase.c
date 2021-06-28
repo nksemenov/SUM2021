@@ -6,7 +6,7 @@
 
 #include "rnd.h"
 #include <wglew.h>
-#include <gl/wglext.h>
+//#include <gl/wglext.h>
 
 #pragma comment(lib, "opengl32")
 

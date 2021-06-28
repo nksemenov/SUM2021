@@ -37,8 +37,8 @@ typedef struct tagns6MATERIAL
   INT ShdNo;
 } ns6MATERIAL;
 
-ns6MATERIAL NS6_RndMaterials[NS6_MAX_MATERIALS];
-INT NS6_RndMaterialSize;
+extern ns6MATERIAL NS6_RndMaterial[NS6_MAX_MATERIALS];
+extern INT NS6_RndMaterialSize;
 
 VOID NS6_RndMtlInit( VOID );
 VOID NS6_RndMtlClose( VOID );

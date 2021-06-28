@@ -6,6 +6,8 @@
 
 #include "res/rndres.h"
 
+#include <wglew.h>
+
 extern HWND NS6_hRndWnd;
 extern HGLRC NS6_hRndGLRC;
 extern HDC NS6_hRndDC;
@@ -22,6 +24,13 @@ extern MATR
   NS6_RndMatrProj,
   NS6_RndMatrVP;
 
+extern VEC 
+  NS6_RndCamLoc,
+  NS6_RndCamRight,
+  NS6_RndCamAt,
+  NS6_RndCamDir,
+  NS6_RndCamUp;
+
 extern VEC NS6_RndCamLoc;
 
 typedef struct tagns6VERTEX
@@ -32,9 +41,18 @@ typedef struct tagns6VERTEX
   VEC4 C;
 } ns6VERTEX;
 
+typedef enum tagns6PRIM_TYPE
+{
+  NS6_RND_PRIM_TRIMESH,  /* Triangle mesh - array of triangles */
+  NS6_RND_PRIM_TRISTRIP, /* Triangle strip - array of stripped triangles */
+  NS6_RND_PRIM_LINES,    /* Line segments (by 2 points) */
+  NS6_RND_PRIM_POINTS,   /* Array of points */
+} ns6PRIM_TYPE;
+
 typedef struct tagns6PRIM
 {
-  ns6VERTEX *V;
+  //ns6VERTEX *V;
+  ns6PRIM_TYPE Type;
   INT NumOfV;
 
   INT *I;
@@ -70,6 +88,8 @@ VOID NS6_RndStart( VOID );
 VOID NS6_RndEnd( VOID );
 
 VOID NS6_RndResize( INT W, INT H );
+
+VOID NS6_RndPrimCreateGrid( ns6PRIM *Pr, INT Grid_W, INT Grid_H, ns6VERTEX *V );
 
 
 /***

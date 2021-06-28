@@ -43,7 +43,7 @@ struct tagns6ANIM
   BYTE
     Keys[256],
     KeysClick[256],
-  KeysOld[256];
+    KeysOld[256];
 
   /* Mouse */
   INT Mx, My, Mz, Mdx, Mdy, Mdz;
@@ -56,6 +56,8 @@ struct tagns6UNIT
 };
 
 extern ns6ANIM NS6_Anim;
+
+extern INT NS6_MouseWheel;
 
 /* AnimClose */
 VOID NS6_AnimClose( VOID );
@@ -86,6 +88,14 @@ VOID NS6_TimerInit( VOID );
 
 /* TimerResponse */
 VOID NS6_TimerResponse( VOID );
+
+VOID NS6_TimerInit( VOID );
+
+VOID NS6_TimerResponse( VOID );
+
+VOID NS6_AnimInputInit( VOID );
+
+VOID NS6_AnimInputResponse( VOID );
 
 #endif /* __anim_h_ */
 

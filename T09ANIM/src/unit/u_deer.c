@@ -25,7 +25,7 @@ typedef struct tagns6UNIT_DEER
 */
 static VOID NS6_UnitInit( ns6UNIT_DEER *Uni, ns6ANIM *Ani )
 {
-  Uni->Pos = VecSet(0, 0, 0);
+  Uni->Pos = VecSet(-150, 0, 0);
   NS6_RndPrimsLoad(&Uni->Deer, "BIN/MODELS/deer.g3dm");
 }
 /* End of 'NS6_UnitInit' function */
@@ -68,7 +68,7 @@ static VOID NS6_UnitResponse( ns6UNIT_DEER *Uni, ns6ANIM *Ani )
 */
 static VOID NS6_UnitRender( ns6UNIT_DEER *Uni, ns6ANIM *Ani )
 {
-  NS6_RndPrimsDraw(&Uni->Deer, /*MatrMulMatr(MatrRotateY(Ani->Time * 100), */MatrScale(VecSet((FLT)0.01, (FLT)0.01, (FLT)0.01)));
+  NS6_RndPrimsDraw(&Uni->Deer, MatrMulMatr(MatrTranslate(Uni->Pos), MatrScale(VecSet((FLT)0.01, (FLT)0.01, (FLT)0.01))));
 }
 /* End of 'NS6_UnitRender' function */
 

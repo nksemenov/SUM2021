@@ -194,6 +194,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\anim\input.c"
+					>
+				</File>
+				<File
 					RelativePath=".\src\anim\timer.c"
 					>
 				</File>
@@ -225,10 +229,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\anim\rnd\rndprim.h"
-						>
-					</File>
-					<File
 						RelativePath=".\src\anim\rnd\rndprims.c"
 						>
 					</File>
@@ -253,14 +253,6 @@
 						</File>
 					</Filter>
 				</Filter>
-				<Filter
-					Name="Math Support"
-					>
-					<File
-						RelativePath=".\src\mth\mth.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Windows Depended"
@@ -274,6 +266,10 @@
 				Name="Units"
 				>
 				<File
+					RelativePath=".\src\unit\u_btr.c"
+					>
+				</File>
+				<File
 					RelativePath=".\src\unit\u_ctrl.c"
 					>
 				</File>
@@ -282,7 +278,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\unit\u_tex.c"
+					>
+				</File>
+				<File
 					RelativePath=".\src\unit\units.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Math Support"
+				>
+				<File
+					RelativePath=".\src\mth\mth.h"
 					>
 				</File>
 			</Filter>

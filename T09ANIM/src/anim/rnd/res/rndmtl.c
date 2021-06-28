@@ -1,5 +1,16 @@
 #include "../rnd.h"
 
+ns6MATERIAL NS6_RndMaterial[NS6_MAX_MATERIALS];
+INT NS6_RndMaterialSize;
+
+INT NS6_RndMtlAdd( ns6MATERIAL *Mtl )
+{
+  if (NS6_RndMaterialSize >= NS6_MAX_MATERIALS)
+    return 0;
+  NS6_RndMaterial[NS6_RndMaterialSize] = *Mtl;
+  return NS6_RndMaterialSize++;
+} 
+
 VOID NS6_RndMtlInit( VOID )
 {
   ns6MATERIAL mtl = {{0}};
@@ -21,23 +32,15 @@ VOID NS6_RndMtlClose( VOID )
   NS6_RndMaterialSize = 0;
 }
 
-INT NS6_RndMtlAdd( ns6MATERIAL *mtl )
-{
-  if (NS6_RndMaterialSize >= NS6_MAX_MATERIALS)
-    return -1;
-  NS6_RndMaterials[NS6_RndMaterialSize] = *mtl;
-  return NS6_RndMaterialSize++;
-}
-
 INT NS6_RndMtlApply( INT MtlNo )
 {
-  INT prg, loc;
+  INT prg, loc, i;
   ns6MATERIAL *mtl;
 
   /* Set material pointer */
   if (MtlNo < 0 || MtlNo >= NS6_RndMaterialSize)
     MtlNo = 0;
-  mtl = &NS6_RndMaterials[MtlNo];
+  mtl = &NS6_RndMaterial[MtlNo];
 
   /* Set program id */
   prg = mtl->ShdNo;
@@ -58,6 +61,19 @@ INT NS6_RndMtlApply( INT MtlNo )
   if ((loc = glGetUniformLocation(prg, "Ph")) != -1)
     glUniform1f(loc, mtl->Ph);
 
+  /* Set textures */
+  for (i = 0; i < 8; i++)
+  {
+    CHAR tname[] = "IsTexture0";  /* --> shader: uniform bool IsTexture2; */
 
+    tname[9] = '0' + i;
+    if (mtl->Tex[i] != -1)
+    {
+      glActiveTexture(GL_TEXTURE0 + i);
+      glBindTexture(GL_TEXTURE_2D, NS6_RndTextures[mtl->Tex[i]].TexId);
+    }
+    if ((loc = glGetUniformLocation(prg, tname)) != -1)
+      glUniform1i(loc, mtl->Tex[i] != -1);
+  }
   return prg;
 }

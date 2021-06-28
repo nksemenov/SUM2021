@@ -62,18 +62,12 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   
   /* Create Units */
   NS6_AnimAddUnit(NS6_UnitCreateDeer());
+  NS6_AnimAddUnit(NS6_UnitCreateBtr());
   NS6_AnimAddUnit(NS6_UnitCreateControl());
 
   /* Message loop */
-  while (TRUE)
-    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-    {
-      if (msg.message == WM_QUIT)
-        break;
-      DispatchMessage(&msg);
-    }
-    else
-      SendMessage(hWnd, WM_TIMER, 30, 0);
+  while (GetMessage(&msg, NULL, 0, 0))
+    DispatchMessage(&msg);
   return 30;
 } /* End of 'WinMain' function */
 
@@ -92,10 +86,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
  */
 LRESULT CALLBACK NS6_WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam )
 {
-  HDC hDC;
-//  POINT pt;
   PAINTSTRUCT ps;
-  static ns6PRIM Pr, PrS, PrF;
 
   switch (Msg)
   {
@@ -124,8 +115,20 @@ LRESULT CALLBACK NS6_WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam 
       SendMessage(hWnd, WM_CLOSE, 0, 0);
     return 0;
 
+  case WM_LBUTTONDOWN:
+    SetCapture(hWnd);
+    return 0;
+
+  case WM_LBUTTONUP:
+    ReleaseCapture();
+    return 0;
+
+  case WM_MOUSEWHEEL:
+    NS6_MouseWheel += (SHORT)HIWORD(wParam);
+    return 0;
+
   case WM_PAINT:
-    hDC = BeginPaint(hWnd, &ps);
+    BeginPaint(hWnd, &ps);
     NS6_AnimCopyFrame();
     EndPaint(hWnd, &ps);
     return 0;

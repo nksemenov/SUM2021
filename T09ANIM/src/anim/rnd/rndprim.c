@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "rnd.h"
+#include "../anim.h"
 
 VOID NS6_RndPrimCreate( ns6PRIM *Pr, ns6VERTEX *V, INT NumOfV, INT *I, INT NumOfI )
 {
@@ -56,14 +56,16 @@ VOID NS6_RndPrimFree( ns6PRIM *Pr )
 /* NS6_PrimDraw */
 VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 {
-  INT loc;
   MATR
+    wvp = MatrMulMatr(Pr->Trans, MatrMulMatr(World, NS6_RndMatrVP)),
     w = MatrMulMatr(Pr->Trans, World),
-    winv = MatrTranspose(MatrInverse(w)),
-    wvp = MatrMulMatr(w, NS6_RndMatrVP);
-
-  INT ProgId = NS6_RndMtlApply(Pr->MtlNo);
-
+    winv = MatrTranspose(MatrInverse(w));
+  INT ProgId = NS6_RndMtlApply(Pr->MtlNo), loc;
+  INT gl_prim_type = Pr->Type == NS6_RND_PRIM_LINES ? GL_LINES :
+                   Pr->Type == NS6_RND_PRIM_TRIMESH ? GL_TRIANGLES :
+                   Pr->Type == NS6_RND_PRIM_TRISTRIP ? GL_TRIANGLE_STRIP :
+                   GL_POINTS;
+  
   if ((loc = glGetUniformLocation(ProgId, "MatrWVP")) != -1)
     glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
   if ((loc = glGetUniformLocation(ProgId, "MatrW")) != -1)
@@ -72,8 +74,8 @@ VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
     glUniformMatrix4fv(loc, 1, FALSE, winv.A[0]);
   if ((loc = glGetUniformLocation(ProgId, "CamLoc")) != -1)
     glUniform3fv(loc, 1, &NS6_RndCamLoc.X);
-  //  if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
-  //    glUniform1f(loc, NS6_Anim.Time);
+  if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
+    glUniform1f(loc, NS6_Anim.Time);
 
   /* Send matrix to OpenGL /v.1.0 */
   glLoadMatrixf(wvp.A[0]);
@@ -86,6 +88,34 @@ VOID NS6_RndPrimDraw( ns6PRIM *Pr, MATR World )
 
   glUseProgram(0);
 }/* End of 'NS6_PrimDraw' function */
+
+VOID NS6_RndPrimCreateGrid( ns6PRIM *Pr, INT Grid_W, INT Grid_H, ns6VERTEX *V )
+{
+  INT i, j, k;
+  INT *Ind;
+
+  if ((Ind = malloc(sizeof(INT) * (Grid_W - 1) * (Grid_H - 1) * 6)) == NULL)
+    return;
+
+  for (k = 0, i = 0; i < Grid_H - 1; i++)
+    for (j = 0; j < Grid_W - 1; j++)
+    {
+      Ind[k++] = i * Grid_W + j;
+      Ind[k++] = i * Grid_W + j + 1;
+      Ind[k++] = (i + 1) * Grid_W + j;
+
+      Ind[k++] = (i + 1) * Grid_W + j;
+      Ind[k++] = i * Grid_W + j + 1;
+      Ind[k++] = (i + 1) * Grid_W + j + 1;
+    }
+
+  //NS6_RndPrimGridEvalNormals(Grid_W, Grid_H, V);
+  NS6_RndPrimCreate(Pr, NS6_RND_PRIM_TRIMESH, V, Grid_W * Grid_H, Ind, (Grid_W - 1) * (Grid_H - 1) * 6);
+  free(Ind);
+} /* End of 'NS6_RndPrimCreateGrid' function */
+
+
+
 /* Load primitive from '*.OBJ' file function.
  * ARGUMENTS:
  *   - pointer to primitive to load:

@@ -23,6 +23,9 @@ VOID NS6_AnimInit( HWND hWnd )
 
   /* Timer initialization */
   NS6_TimerInit();
+  
+  /* input initialization */
+  NS6_AnimInputInit();
 }
 /* End of 'NS6_AnimInit' function */
 
@@ -67,31 +70,17 @@ VOID NS6_AnimRender( VOID )
   /* Timer response */
   NS6_TimerResponse();
 
+  /* Input response */
+  NS6_AnimInputResponse();
+
   for (i = 0; i < NS6_Anim.NumOfUnits; i++)
     NS6_Anim.Units[i]->Response(NS6_Anim.Units[i], &NS6_Anim);
 
   NS6_RndStart();
   for (i = 0; i < NS6_Anim.NumOfUnits; i++)
     NS6_Anim.Units[i]->Render(NS6_Anim.Units[i], &NS6_Anim);
+  
   NS6_RndEnd();
-
-  /* Keyboard */
-  GetKeyboardState(NS6_Anim.Keys);
-  for (i = 0; i < 256; i++)
-  {
-    NS6_Anim.Keys[i] >>= 7;
-    NS6_Anim.KeysClick[i] = NS6_Anim.Keys[i] && NS6_Anim.KeysOld[i];
-  }
-  memcpy(NS6_Anim.KeysOld, NS6_Anim.Keys, 256);
-
-  /* Mouse */
-  GetCursorPos(&pt);
-  ScreenToClient(NS6_Anim.hWnd, &pt);
-
-  NS6_Anim.Mdx = pt.x - NS6_Anim.Mx;
-  NS6_Anim.Mdy = pt.y - NS6_Anim.My;
-  NS6_Anim.Mx = pt.x;
-  NS6_Anim.My = pt.y;
 }
 /* End of 'NS6_AnimRender' function */
 

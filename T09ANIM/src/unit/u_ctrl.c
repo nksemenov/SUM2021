@@ -10,51 +10,54 @@
 typedef struct tagns6UNIT_CONTROL
 {
   NS6_UNIT_BASE_FIELDS;
+  INT Speed;
+  DBL AngleSpeed;
   FLT CamDist, RotX, RotY;
-  VEC CamLoc, CamDir, CamUp;
+  VEC CamLoc, Dir, Up, At, Right;
 } ns6UNIT_CONTROL;
 
 static VOID NS6_UnitInit( ns6UNIT_CONTROL *Uni, ns6ANIM *Ani )
 {
-  Uni->CamDist = 50;
-  Uni->RotX = (FLT)D2R(30);
-  Uni->RotY = (FLT)D2R(30);
-  Uni->CamLoc = VecSet(0, 0, 10);
-  Uni->CamUp = VecSet(0, 1, 0);
-  Uni->CamDir = VecSet(0, 1, 0);
+  Uni->CamLoc = VecSet(0, 0, 5);
+  Uni->Up = VecSet(0, 1, 0);
+  Uni->Dir = VecNormalize(VecSubVec(Uni->At, Uni->CamLoc));
+  Uni->Right = VecNormalize(VecCrossVec(Uni->Dir, VecSet(0, 1, 0)));
+  Uni->At = VecSet1(0);
+  Uni->Speed = 5;
+  Uni->AngleSpeed = 5;
 }
 
 static VOID NS6_UnitResponse( ns6UNIT_CONTROL *Uni, ns6ANIM *Ani )
 {
-  if (Ani->KeysClick[VK_F1])
-    NS6_AnimFlipFullScreen();
-  if (Ani->Keys['P'])
-    Ani->IsPause = !Ani->IsPause;
-
-  Uni->RotX += Ani->Mdx * Ani->GlobalDeltaTime * Ani->Keys[VK_LBUTTON];
-  Uni->RotY += Ani->Mdy * Ani->GlobalDeltaTime * Ani->Keys[VK_LBUTTON];
-  Uni->CamDist += Ani->Mdz * Ani->GlobalDeltaTime;
-
-  Uni->CamLoc = PointTransform(Uni->CamLoc, MatrRotateX(Ani->DeltaTime * 60 * (Ani->Keys['S'] - Ani->Keys['W'])));
-  Uni->CamLoc = PointTransform(Uni->CamLoc, MatrRotateY(Ani->DeltaTime * 60 * (Ani->Keys['D'] - Ani->Keys['A'])));
-  if (Ani->Keys['F'] || Ani->Keys['R'])
+  if (Ani->Keys['S'] || Ani->Keys['W'])
   {
-    Uni->CamLoc = VecDivNum(Uni->CamLoc, (Ani->DeltaTime * abs(Ani->Keys['F'] - Ani->Keys['R']) * 100));
-    Uni->CamLoc.X *= 1;
+    Uni->CamLoc = VecAddVec(Uni->CamLoc, VecMulNum(Uni->Dir, Ani->GlobalDeltaTime * Uni->Speed * (Ani->Keys['W'] - Ani->Keys['S'])));
+  //  Uni->At = VecAddVec(Uni->At, VecMulNum(Uni->Dir, Ani->GlobalDeltaTime * Uni->Speed * (Ani->Keys['W'] - Ani->Keys['S'])));
   }
-/*  Uni->CamLoc = VecAddVec(Uni->CamLoc, VecMulNum(VecSet(0, 0, 1), Ani->DeltaTime * 30 * (Ani->Keys['S'] - Ani->Keys['W'])));
-  Uni->CamLoc = VecAddVec(Uni->CamLoc, VecMulNum(VecSet(0, 1, 0), Ani->DeltaTime * 30 * (Ani->Keys['R'] - Ani->Keys['F'])));
-  Uni->CamLoc = VecAddVec(Uni->CamLoc, VecMulNum(VecSet(1, 0, 0), Ani->DeltaTime * 30 * (Ani->Keys['D'] - Ani->Keys['A'])));
+  if (Ani->Keys['A'] || Ani->Keys['D'])
+    Uni->CamLoc = VecAddVec(Uni->CamLoc, VecMulNum(Uni->Right, Ani->GlobalDeltaTime * Uni->Speed * (Ani->Keys['D'] - Ani->Keys['A'])));
 
-  Uni->CamDir = VecAddVec(Uni->CamDir, VecSet(-sin(Ani->DeltaTime * 3 * (Ani->Keys['Q'] - Ani->Keys['E'])), 0, -cos(Ani->DeltaTime * 3 *(Ani->Keys['Q'] - Ani->Keys['E']))));
-  Uni->CamDir.X -= 2 * (INT)Uni->CamDir.X ;
-  Uni->CamDir.Y -= 2 * (INT)Uni->CamDir.Y ;
-  Uni->CamDir.Z -= 2 * (INT)Uni->CamDir.Z ;*/
-  NS6_RndCamSet(Uni->CamLoc, Uni->CamDir, Uni->CamUp);
+  if (Ani->Mdz)
+    Uni->CamLoc = VecAddVec(Uni->CamLoc, VecMulNum(Uni->Dir, Ani->GlobalDeltaTime * Uni->Speed * Ani->Mdz * 0.03));
+
+  if (Ani->Keys[VK_LBUTTON])
+    Uni->CamLoc = PointTransform(Uni->CamLoc, MatrRotateY(-Ani->Keys[VK_LBUTTON] * Ani->GlobalDeltaTime * Uni->AngleSpeed * Ani->Mdx * 30));
+
+  if (Ani->Keys[VK_RBUTTON])
+    Uni->CamLoc = PointTransform(Uni->CamLoc, MatrRotateX(-Ani->Keys[VK_RBUTTON] * Ani->GlobalDeltaTime * Uni->AngleSpeed * Ani->Mdy * 30));
+
+  if (Ani->Keys['Q'] || Ani->Keys['E'])
+  {
+    Uni->CamLoc.Y += Ani->GlobalDeltaTime * Uni->Speed * (Ani->Keys['E'] - Ani->Keys['Q']);
+    Uni->At.Y += Ani->GlobalDeltaTime * Uni->Speed * (Ani->Keys['E'] - Ani->Keys['Q']);
+  }
+  if (Ani->Keys[VK_F1])
+    NS6_AnimFlipFullScreen();
 }
 
 static VOID NS6_UnitRender( ns6UNIT_CONTROL *Uni, ns6ANIM *Ani )
 {
+  NS6_RndCamSet(Uni->CamLoc, Uni->At, Uni->Up);
 }
 
 ns6UNIT * NS6_UnitCreateControl( VOID )
